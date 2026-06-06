@@ -8,6 +8,8 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "check": "astro check",
+    "audit:prod": "npm audit --omit=dev",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -16,5 +18,12 @@
     "astro": "^6.4.4",
     "lucide-static": "^1.17.0",
     "tailwindcss": "^4.3.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "volar-service-yaml": "0.0.71"
   }
 }
