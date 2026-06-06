@@ -1,0 +1,866 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+import checkIcon from 'lucide-static/icons/check.svg?raw';
+import downloadIcon from 'lucide-static/icons/download.svg?raw';
+import gridIcon from 'lucide-static/icons/grid-3x3.svg?raw';
+import imagePlusIcon from 'lucide-static/icons/image-plus.svg?raw';
+import imagesIcon from 'lucide-static/icons/images.svg?raw';
+import settingsIcon from 'lucide-static/icons/settings-2.svg?raw';
+import shuffleIcon from 'lucide-static/icons/shuffle.svg?raw';
+import sparklesIcon from 'lucide-static/icons/sparkles.svg?raw';
+import trashIcon from 'lucide-static/icons/trash-2.svg?raw';
+import uploadIcon from 'lucide-static/icons/upload.svg?raw';
+---
+
+<Layout
+	title="Photo Collage Maker | photocollagemake.com"
+	description="Upload multiple photos, choose a collage template, tune spacing and corners, finish, and download a PNG collage."
+>
+	<header class="sticky top-0 z-30 border-b border-hairline bg-canvas/90 backdrop-blur-xl">
+		<div class="pc-container flex h-16 items-center justify-between gap-4">
+			<a href="/" class="flex items-center gap-2 text-sm font-medium text-ink" aria-label="Photo Collage home">
+				<span class="grid h-7 w-7 place-items-center rounded-full bg-ink text-canvas">
+					<span class="pc-icon [&>svg]:h-3.5 [&>svg]:w-3.5" set:html={gridIcon} aria-hidden="true"></span>
+				</span>
+				<span>Photo Collage</span>
+			</a>
+			<nav class="hidden items-center gap-1 text-sm text-body md:flex" aria-label="Primary">
+				<a class="rounded-full px-3 py-2 hover:bg-canvas-soft-2 hover:text-ink" href="#studio">Studio</a>
+				<a class="rounded-full px-3 py-2 hover:bg-canvas-soft-2 hover:text-ink" href="#templates">Templates</a>
+				<a class="rounded-full px-3 py-2 hover:bg-canvas-soft-2 hover:text-ink" href="#export">Export</a>
+			</nav>
+			<a class="hidden text-sm font-medium text-body sm:inline-flex" href="https://photocollagemake.com">
+				photocollagemake.com
+			</a>
+		</div>
+	</header>
+
+	<main class="min-h-screen overflow-hidden bg-canvas-soft text-ink">
+		<section class="relative border-b border-hairline bg-canvas">
+			<div
+				class="pointer-events-none absolute inset-x-0 top-0 h-56 opacity-80 blur-3xl"
+				aria-hidden="true"
+				style="background: radial-gradient(circle at 24% 18%, #50e3c2 0, transparent 26%), radial-gradient(circle at 52% 8%, #0070f3 0, transparent 22%), radial-gradient(circle at 70% 16%, #ff0080 0, transparent 20%), radial-gradient(circle at 88% 20%, #f9cb28 0, transparent 18%);"
+			>
+			</div>
+			<div class="pc-container relative grid gap-8 py-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-end lg:py-16">
+				<div class="max-w-3xl">
+					<div class="mb-5 inline-flex items-center gap-2 rounded-full border border-hairline bg-canvas px-3 py-1.5 text-sm text-body shadow-vercel-2">
+						<span class="pc-icon text-ink [&>svg]:h-3.5 [&>svg]:w-3.5" set:html={sparklesIcon} aria-hidden="true"></span>
+						Local collage studio
+					</div>
+					<h1 class="max-w-4xl text-[clamp(2.6rem,8vw,5.5rem)] font-semibold leading-[0.95] tracking-[-0.055em] text-ink">
+						Photo collage maker.
+					</h1>
+					<p class="mt-5 max-w-2xl text-lg leading-8 text-body">
+						Upload photos, choose a layout, finish the composition, and export a clean PNG from your browser.
+					</p>
+				</div>
+				<div class="pc-panel hidden p-3 md:block">
+					<div class="grid aspect-[16/9] grid-cols-5 grid-rows-4 gap-2 rounded-vercel bg-canvas-soft-2 p-2">
+						<div class="col-span-2 row-span-4 rounded-vercel bg-[linear-gradient(135deg,#171717,#4d4d4d)]"></div>
+						<div class="col-span-3 row-span-2 rounded-vercel bg-[linear-gradient(135deg,#d3e5ff,#50e3c2)]"></div>
+						<div class="col-span-1 row-span-2 rounded-vercel bg-[linear-gradient(135deg,#f5f5f5,#ffffff)]"></div>
+						<div class="col-span-2 row-span-2 rounded-vercel bg-[linear-gradient(135deg,#ffefcf,#ff0080)]"></div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section id="studio" class="pc-container py-6 lg:py-8">
+			<div class="grid gap-4 xl:grid-cols-[320px_minmax(0,1fr)_360px]">
+				<aside class="space-y-4">
+					<section class="pc-panel p-4" aria-labelledby="upload-title">
+						<div class="mb-4 flex items-center justify-between gap-3">
+							<div>
+								<p class="pc-label">Photos</p>
+								<h2 id="upload-title" class="text-xl font-semibold tracking-[-0.03em]">Upload</h2>
+							</div>
+							<span class="pc-icon text-body [&>svg]:h-5 [&>svg]:w-5" set:html={imagesIcon} aria-hidden="true"></span>
+						</div>
+
+						<label
+							id="drop-zone"
+							for="photo-input"
+							class="flex min-h-40 cursor-pointer flex-col items-center justify-center rounded-vercel-lg border border-dashed border-hairline-strong bg-canvas-soft p-5 text-center transition hover:border-ink hover:bg-canvas"
+						>
+							<span class="mb-3 grid h-10 w-10 place-items-center rounded-full bg-ink text-canvas">
+								<span class="pc-icon [&>svg]:h-4.5 [&>svg]:w-4.5" set:html={uploadIcon} aria-hidden="true"></span>
+							</span>
+							<span class="text-sm font-medium text-ink">Drop images</span>
+							<span class="mt-1 text-sm text-mute">PNG, JPG, WebP, AVIF</span>
+							<input id="photo-input" class="sr-only" type="file" accept="image/*" multiple />
+						</label>
+
+						<div class="mt-4 flex flex-wrap items-center gap-2">
+							<button id="add-more" class="pc-button pc-button-secondary" type="button">
+								<span class="pc-icon" set:html={imagePlusIcon} aria-hidden="true"></span>
+								Add photos
+							</button>
+							<button id="clear-photos" class="pc-icon-button" type="button" aria-label="Clear photos">
+								<span class="pc-icon" set:html={trashIcon} aria-hidden="true"></span>
+							</button>
+						</div>
+
+						<div class="mt-4">
+							<div class="mb-2 flex items-center justify-between">
+								<p class="pc-label">Order</p>
+								<p id="photo-count" class="text-xs text-mute">0 photos</p>
+							</div>
+							<div id="photo-tray" class="grid grid-cols-4 gap-2" aria-live="polite"></div>
+						</div>
+					</section>
+
+					<section class="pc-panel p-4" aria-labelledby="quick-title">
+						<div class="mb-4 flex items-center justify-between">
+							<div>
+								<p class="pc-label">Actions</p>
+								<h2 id="quick-title" class="text-xl font-semibold tracking-[-0.03em]">Flow</h2>
+							</div>
+							<span class="pc-icon text-body [&>svg]:h-5 [&>svg]:w-5" set:html={checkIcon} aria-hidden="true"></span>
+						</div>
+						<div class="grid gap-2">
+							<button id="smart-template" class="pc-button pc-button-secondary justify-start" type="button">
+								<span class="pc-icon" set:html={sparklesIcon} aria-hidden="true"></span>
+								Smart template
+							</button>
+							<button id="shuffle-photos" class="pc-button pc-button-secondary justify-start" type="button">
+								<span class="pc-icon" set:html={shuffleIcon} aria-hidden="true"></span>
+								Shuffle photos
+							</button>
+							<button id="finish-collage" class="pc-button pc-button-primary justify-start" type="button" disabled>
+								<span class="pc-icon" set:html={checkIcon} aria-hidden="true"></span>
+								Finish
+							</button>
+						</div>
+						<p id="status-line" class="mt-3 text-sm text-mute" aria-live="polite">Waiting for photos.</p>
+					</section>
+				</aside>
+
+				<section class="pc-panel min-h-[560px] p-3 lg:p-5" aria-labelledby="preview-title">
+					<div class="mb-4 flex flex-wrap items-center justify-between gap-3 px-1">
+						<div>
+							<p class="pc-label">Canvas</p>
+							<h2 id="preview-title" class="text-xl font-semibold tracking-[-0.03em]">Preview</h2>
+						</div>
+						<div class="flex items-center gap-2 text-sm text-body">
+							<span id="active-template-label">Custom default</span>
+							<span class="h-1 w-1 rounded-full bg-hairline-strong"></span>
+							<span id="active-size-label">1:1</span>
+						</div>
+					</div>
+					<div class="flex min-h-[500px] items-center justify-center rounded-vercel-lg bg-canvas-soft-2 p-3 sm:p-6">
+						<div id="collage-preview" class="pc-collage" aria-label="Collage preview"></div>
+					</div>
+				</section>
+
+				<aside class="space-y-4">
+					<section id="templates" class="pc-panel p-4" aria-labelledby="templates-title">
+						<div class="mb-4 flex items-center justify-between gap-3">
+							<div>
+								<p class="pc-label">Layouts</p>
+								<h2 id="templates-title" class="text-xl font-semibold tracking-[-0.03em]">Templates</h2>
+							</div>
+							<span class="pc-icon text-body [&>svg]:h-5 [&>svg]:w-5" set:html={gridIcon} aria-hidden="true"></span>
+						</div>
+						<div id="template-list" class="grid grid-cols-2 gap-3"></div>
+					</section>
+
+					<section class="pc-panel p-4" aria-labelledby="settings-title">
+						<div class="mb-4 flex items-center justify-between gap-3">
+							<div>
+								<p class="pc-label">Controls</p>
+								<h2 id="settings-title" class="text-xl font-semibold tracking-[-0.03em]">Settings</h2>
+							</div>
+							<span class="pc-icon text-body [&>svg]:h-5 [&>svg]:w-5" set:html={settingsIcon} aria-hidden="true"></span>
+						</div>
+
+						<div class="space-y-5">
+							<div>
+								<div class="mb-2 flex items-center justify-between">
+									<label class="pc-label" for="ratio-1-1">Aspect</label>
+									<span id="ratio-readout" class="text-xs text-mute">1:1</span>
+								</div>
+								<div class="grid grid-cols-5 gap-2" role="group" aria-label="Aspect ratio">
+									<button id="ratio-1-1" class="pc-ratio h-9 rounded-vercel-sm" type="button" data-ratio="1:1">1:1</button>
+									<button class="pc-ratio h-9 rounded-vercel-sm" type="button" data-ratio="4:5">4:5</button>
+									<button class="pc-ratio h-9 rounded-vercel-sm" type="button" data-ratio="16:9">16:9</button>
+									<button class="pc-ratio h-9 rounded-vercel-sm" type="button" data-ratio="9:16">9:16</button>
+									<button class="pc-ratio h-9 rounded-vercel-sm" type="button" data-ratio="3:2">3:2</button>
+								</div>
+							</div>
+
+							<div>
+								<div class="mb-2 flex items-center justify-between">
+									<label class="pc-label" for="spacing-control">Space</label>
+									<span id="spacing-value" class="text-xs text-mute">12 px</span>
+								</div>
+								<input id="spacing-control" class="pc-range" type="range" min="0" max="40" value="12" />
+							</div>
+
+							<div>
+								<div class="mb-2 flex items-center justify-between">
+									<label class="pc-label" for="corner-control">Corner</label>
+									<span id="corner-value" class="text-xs text-mute">10 px</span>
+								</div>
+								<input id="corner-control" class="pc-range" type="range" min="0" max="36" value="10" />
+							</div>
+
+							<div>
+								<div class="mb-2 flex items-center justify-between">
+									<label class="pc-label" for="bg-color">Color</label>
+									<input id="bg-color" class="h-8 w-12 rounded-vercel-sm border border-hairline bg-canvas p-1" type="color" value="#ffffff" />
+								</div>
+								<div class="grid grid-cols-6 gap-2" role="group" aria-label="Background colors">
+									<button class="pc-swatch h-8 rounded-vercel-sm" type="button" data-color="#ffffff" style="background:#ffffff" aria-label="White"></button>
+									<button class="pc-swatch h-8 rounded-vercel-sm" type="button" data-color="#fafafa" style="background:#fafafa" aria-label="Soft white"></button>
+									<button class="pc-swatch h-8 rounded-vercel-sm" type="button" data-color="#171717" style="background:#171717" aria-label="Ink"></button>
+									<button class="pc-swatch h-8 rounded-vercel-sm" type="button" data-color="#d3e5ff" style="background:#d3e5ff" aria-label="Blue"></button>
+									<button class="pc-swatch h-8 rounded-vercel-sm" type="button" data-color="#ffefcf" style="background:#ffefcf" aria-label="Amber"></button>
+									<button class="pc-swatch h-8 rounded-vercel-sm" type="button" data-color="#d8ccf1" style="background:#d8ccf1" aria-label="Violet"></button>
+								</div>
+							</div>
+
+							<div>
+								<p class="pc-label mb-2">Image fit</p>
+								<div class="grid grid-cols-2 gap-2" role="group" aria-label="Image fit">
+									<button class="pc-fit h-9 rounded-vercel-sm" type="button" data-fit="cover">Cover</button>
+									<button class="pc-fit h-9 rounded-vercel-sm" type="button" data-fit="contain">Contain</button>
+								</div>
+							</div>
+						</div>
+					</section>
+
+					<section id="export" class="pc-panel p-4" aria-labelledby="export-title">
+						<div class="mb-4 flex items-center justify-between gap-3">
+							<div>
+								<p class="pc-label">Download</p>
+								<h2 id="export-title" class="text-xl font-semibold tracking-[-0.03em]">Export</h2>
+							</div>
+							<span class="pc-icon text-body [&>svg]:h-5 [&>svg]:w-5" set:html={downloadIcon} aria-hidden="true"></span>
+						</div>
+						<div id="download-panel" class="hidden rounded-vercel bg-canvas-soft p-3">
+							<canvas id="export-canvas" class="hidden"></canvas>
+							<p class="mb-3 text-sm text-body">Your collage is ready.</p>
+							<a id="download-link" class="pc-button pc-button-primary w-full" href="#" download="photo-collage.png">
+								<span class="pc-icon" set:html={downloadIcon} aria-hidden="true"></span>
+								Download PNG
+							</a>
+						</div>
+						<p id="export-empty" class="text-sm text-mute">Finish the collage to unlock the download.</p>
+					</section>
+				</aside>
+			</div>
+		</section>
+	</main>
+</Layout>
+
+<script>
+	const state = {
+		photos: [],
+		templateId: 'custom-default',
+		ratio: '1:1',
+		spacing: 12,
+		corner: 10,
+		background: '#ffffff',
+		fit: 'cover',
+		finished: false,
+		dragIndex: null,
+	};
+
+	const ratios = {
+		'1:1': { width: 1600, height: 1600, css: '1 / 1' },
+		'4:5': { width: 1600, height: 2000, css: '4 / 5' },
+		'16:9': { width: 1920, height: 1080, css: '16 / 9' },
+		'9:16': { width: 1080, height: 1920, css: '9 / 16' },
+		'3:2': { width: 1800, height: 1200, css: '3 / 2' },
+	};
+
+	const el = {
+		input: document.getElementById('photo-input'),
+		dropZone: document.getElementById('drop-zone'),
+		addMore: document.getElementById('add-more'),
+		clearPhotos: document.getElementById('clear-photos'),
+		photoTray: document.getElementById('photo-tray'),
+		photoCount: document.getElementById('photo-count'),
+		preview: document.getElementById('collage-preview'),
+		templateList: document.getElementById('template-list'),
+		activeTemplateLabel: document.getElementById('active-template-label'),
+		activeSizeLabel: document.getElementById('active-size-label'),
+		statusLine: document.getElementById('status-line'),
+		finish: document.getElementById('finish-collage'),
+		downloadPanel: document.getElementById('download-panel'),
+		exportEmpty: document.getElementById('export-empty'),
+		canvas: document.getElementById('export-canvas'),
+		downloadLink: document.getElementById('download-link'),
+		spacing: document.getElementById('spacing-control'),
+		spacingValue: document.getElementById('spacing-value'),
+		corner: document.getElementById('corner-control'),
+		cornerValue: document.getElementById('corner-value'),
+		bgColor: document.getElementById('bg-color'),
+		ratioReadout: document.getElementById('ratio-readout'),
+		smartTemplate: document.getElementById('smart-template'),
+		shuffle: document.getElementById('shuffle-photos'),
+	};
+
+	const templates = [
+		{
+			id: 'custom-default',
+			name: 'Custom default',
+			label: 'Recommended',
+			build: buildGridLayout,
+		},
+		{
+			id: 'hero-side',
+			name: 'Hero side',
+			label: 'Focus',
+			build: buildHeroSideLayout,
+		},
+		{
+			id: 'editorial',
+			name: 'Editorial',
+			label: 'Balanced',
+			build: buildEditorialLayout,
+		},
+		{
+			id: 'mosaic',
+			name: 'Mosaic',
+			label: 'Dynamic',
+			build: buildMosaicLayout,
+		},
+		{
+			id: 'story-stack',
+			name: 'Story stack',
+			label: 'Vertical',
+			build: buildStoryLayout,
+		},
+		{
+			id: 'panorama',
+			name: 'Panorama',
+			label: 'Wide',
+			build: buildPanoramaLayout,
+		},
+	];
+
+	function buildGridLayout(count) {
+		const safeCount = Math.max(1, count);
+		const columns = safeCount <= 1 ? 1 : safeCount <= 4 ? 2 : safeCount <= 9 ? 3 : 4;
+		const rows = Math.ceil(safeCount / columns);
+		return {
+			columns,
+			rows,
+			cells: Array.from({ length: safeCount }, (_, index) => ({
+				x: index % columns,
+				y: Math.floor(index / columns),
+				w: 1,
+				h: 1,
+			})),
+		};
+	}
+
+	function buildHeroSideLayout(count) {
+		if (count < 3) return buildGridLayout(count);
+		const sideCount = count - 1;
+		const sideColumns = sideCount <= 3 ? 1 : 2;
+		const rows = Math.max(3, Math.ceil(sideCount / sideColumns));
+		const cells = [{ x: 0, y: 0, w: 2, h: rows }];
+		for (let index = 0; index < sideCount; index += 1) {
+			cells.push({
+				x: 2 + (index % sideColumns),
+				y: Math.floor(index / sideColumns),
+				w: 1,
+				h: 1,
+			});
+		}
+		return { columns: 2 + sideColumns, rows, cells };
+	}
+
+	function buildEditorialLayout(count) {
+		if (count < 4) return buildHeroSideLayout(count);
+		const cells = [
+			{ x: 0, y: 0, w: 3, h: 2 },
+			{ x: 3, y: 0, w: 2, h: 2 },
+		];
+		const remaining = count - cells.length;
+		const bottomRows = Math.ceil(remaining / 5);
+		for (let index = 0; index < remaining; index += 1) {
+			cells.push({
+				x: index % 5,
+				y: 2 + Math.floor(index / 5),
+				w: 1,
+				h: 1,
+			});
+		}
+		return { columns: 5, rows: 2 + bottomRows, cells };
+	}
+
+	function buildMosaicLayout(count) {
+		const patterns = {
+			3: {
+				columns: 4,
+				rows: 3,
+				cells: [
+					{ x: 0, y: 0, w: 2, h: 3 },
+					{ x: 2, y: 0, w: 2, h: 1 },
+					{ x: 2, y: 1, w: 2, h: 2 },
+				],
+			},
+			4: {
+				columns: 4,
+				rows: 4,
+				cells: [
+					{ x: 0, y: 0, w: 2, h: 4 },
+					{ x: 2, y: 0, w: 2, h: 2 },
+					{ x: 2, y: 2, w: 1, h: 2 },
+					{ x: 3, y: 2, w: 1, h: 2 },
+				],
+			},
+			5: {
+				columns: 5,
+				rows: 4,
+				cells: [
+					{ x: 0, y: 0, w: 2, h: 2 },
+					{ x: 2, y: 0, w: 3, h: 2 },
+					{ x: 0, y: 2, w: 1, h: 2 },
+					{ x: 1, y: 2, w: 2, h: 2 },
+					{ x: 3, y: 2, w: 2, h: 2 },
+				],
+			},
+			6: {
+				columns: 6,
+				rows: 4,
+				cells: [
+					{ x: 0, y: 0, w: 3, h: 2 },
+					{ x: 3, y: 0, w: 3, h: 2 },
+					{ x: 0, y: 2, w: 2, h: 2 },
+					{ x: 2, y: 2, w: 1, h: 2 },
+					{ x: 3, y: 2, w: 1, h: 2 },
+					{ x: 4, y: 2, w: 2, h: 2 },
+				],
+			},
+		};
+		return patterns[count] || buildEditorialLayout(count);
+	}
+
+	function buildStoryLayout(count) {
+		const safeCount = Math.max(1, count);
+		return {
+			columns: 1,
+			rows: safeCount,
+			cells: Array.from({ length: safeCount }, (_, index) => ({
+				x: 0,
+				y: index,
+				w: 1,
+				h: 1,
+			})),
+		};
+	}
+
+	function buildPanoramaLayout(count) {
+		const safeCount = Math.max(1, count);
+		const columns = Math.min(safeCount, 6);
+		const rows = Math.ceil(safeCount / columns);
+		return {
+			columns,
+			rows,
+			cells: Array.from({ length: safeCount }, (_, index) => ({
+				x: index % columns,
+				y: Math.floor(index / columns),
+				w: 1,
+				h: 1,
+			})),
+		};
+	}
+
+	function getTemplate() {
+		return templates.find((template) => template.id === state.templateId) || templates[0];
+	}
+
+	function getLayout(count = Math.max(1, state.photos.length || 4)) {
+		return getTemplate().build(count);
+	}
+
+	function markDirty(message) {
+		state.finished = false;
+		if (el.downloadPanel) el.downloadPanel.classList.add('hidden');
+		if (el.exportEmpty) el.exportEmpty.classList.remove('hidden');
+		if (message && el.statusLine) el.statusLine.textContent = message;
+	}
+
+	function fileToPhoto(file) {
+		const url = URL.createObjectURL(file);
+		const image = new Image();
+		image.decoding = 'async';
+		image.src = url;
+		return {
+			id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
+			name: file.name,
+			url,
+			image,
+		};
+	}
+
+	function addFiles(files) {
+		const images = Array.from(files || []).filter((file) => file.type.startsWith('image/'));
+		if (!images.length) return;
+		state.photos.push(...images.map(fileToPhoto));
+		state.templateId = smartTemplateForCount(state.photos.length);
+		markDirty(`${state.photos.length} photos loaded.`);
+		renderAll();
+	}
+
+	function smartTemplateForCount(count) {
+		if (count <= 2) return 'custom-default';
+		if (count === 3) return 'hero-side';
+		if (count <= 6) return 'mosaic';
+		return 'editorial';
+	}
+
+	function renderAll() {
+		renderTemplates();
+		renderTray();
+		renderPreview();
+		renderControls();
+	}
+
+	function renderTemplates() {
+		if (!el.templateList) return;
+		const count = Math.max(1, state.photos.length || 4);
+		el.templateList.innerHTML = '';
+		for (const template of templates) {
+			const layout = template.build(count);
+			const button = document.createElement('button');
+			button.className = 'pc-template';
+			button.type = 'button';
+			button.setAttribute('aria-pressed', String(template.id === state.templateId));
+			button.dataset.template = template.id;
+
+			const mini = document.createElement('span');
+			mini.className = 'pc-mini-layout mb-2';
+			mini.style.gridTemplateColumns = `repeat(${layout.columns}, minmax(0, 1fr))`;
+			mini.style.gridTemplateRows = `repeat(${layout.rows}, minmax(0, 1fr))`;
+
+			for (const cell of layout.cells) {
+				const miniCell = document.createElement('span');
+				miniCell.className = 'pc-mini-cell';
+				miniCell.style.gridColumn = `${cell.x + 1} / span ${cell.w}`;
+				miniCell.style.gridRow = `${cell.y + 1} / span ${cell.h}`;
+				mini.append(miniCell);
+			}
+
+			const name = document.createElement('span');
+			name.className = 'block text-sm font-medium';
+			name.textContent = template.name;
+			const label = document.createElement('span');
+			label.className = 'mt-0.5 block text-xs opacity-70';
+			label.textContent = template.label;
+
+			button.append(mini, name, label);
+			button.addEventListener('click', () => {
+				state.templateId = template.id;
+				markDirty(`${template.name} selected.`);
+				renderAll();
+			});
+			el.templateList.append(button);
+		}
+	}
+
+	function renderTray() {
+		if (!el.photoTray || !el.photoCount) return;
+		el.photoTray.innerHTML = '';
+		const count = state.photos.length;
+		el.photoCount.textContent = `${count} ${count === 1 ? 'photo' : 'photos'}`;
+		if (el.finish) el.finish.disabled = count === 0;
+		if (!count) {
+			const empty = document.createElement('div');
+			empty.className = 'col-span-4 rounded-vercel border border-hairline bg-canvas-soft p-4 text-sm text-mute';
+			empty.textContent = 'No photos yet.';
+			el.photoTray.append(empty);
+			return;
+		}
+
+		state.photos.forEach((photo, index) => {
+			const thumb = document.createElement('button');
+			thumb.className = 'pc-thumb';
+			thumb.type = 'button';
+			thumb.draggable = true;
+			thumb.dataset.index = String(index);
+			thumb.setAttribute('aria-label', `Photo ${index + 1}: ${photo.name}`);
+			thumb.innerHTML = `<img src="${photo.url}" alt="">`;
+			thumb.addEventListener('dragstart', (event) => {
+				state.dragIndex = index;
+				event.dataTransfer?.setData('text/plain', String(index));
+			});
+			thumb.addEventListener('dragover', (event) => event.preventDefault());
+			thumb.addEventListener('drop', (event) => {
+				event.preventDefault();
+				swapPhotos(getDragIndex(event), index);
+			});
+			el.photoTray.append(thumb);
+		});
+	}
+
+	function renderPreview() {
+		if (!el.preview) return;
+		const count = Math.max(1, state.photos.length || 4);
+		const layout = getLayout(count);
+		const ratio = ratios[state.ratio] || ratios['1:1'];
+		el.preview.innerHTML = '';
+		el.preview.style.aspectRatio = ratio.css;
+		el.preview.style.gridTemplateColumns = `repeat(${layout.columns}, minmax(0, 1fr))`;
+		el.preview.style.gridTemplateRows = `repeat(${layout.rows}, minmax(0, 1fr))`;
+		el.preview.style.gap = `${state.spacing}px`;
+		el.preview.style.padding = `${state.spacing}px`;
+		el.preview.style.borderRadius = `${state.corner + state.spacing}px`;
+		el.preview.style.background = state.background;
+
+		layout.cells.forEach((cell, index) => {
+			const wrapper = document.createElement('div');
+			wrapper.className = 'pc-cell';
+			wrapper.style.gridColumn = `${cell.x + 1} / span ${cell.w}`;
+			wrapper.style.gridRow = `${cell.y + 1} / span ${cell.h}`;
+			wrapper.style.borderRadius = `${state.corner}px`;
+
+			const photo = state.photos[index];
+			if (photo) {
+				const image = document.createElement('img');
+				image.src = photo.url;
+				image.alt = '';
+				image.style.objectFit = state.fit;
+				wrapper.append(image);
+			} else {
+				const placeholder = document.createElement('div');
+				placeholder.className = 'flex h-full w-full items-center justify-center text-2xl leading-none text-mute';
+				placeholder.textContent = '+';
+				wrapper.append(placeholder);
+			}
+
+			const drop = document.createElement('button');
+			drop.type = 'button';
+			drop.draggable = Boolean(photo);
+			drop.setAttribute('aria-label', `Collage cell ${index + 1}`);
+			drop.addEventListener('dragstart', (event) => {
+				state.dragIndex = index;
+				event.dataTransfer?.setData('text/plain', String(index));
+			});
+			drop.addEventListener('dragover', (event) => event.preventDefault());
+			drop.addEventListener('drop', (event) => {
+				event.preventDefault();
+				swapPhotos(getDragIndex(event), index);
+			});
+			wrapper.append(drop);
+			el.preview.append(wrapper);
+		});
+	}
+
+	function renderControls() {
+		const template = getTemplate();
+		if (el.activeTemplateLabel) el.activeTemplateLabel.textContent = template.name;
+		if (el.activeSizeLabel) el.activeSizeLabel.textContent = state.ratio;
+		if (el.ratioReadout) el.ratioReadout.textContent = state.ratio;
+		if (el.spacingValue) el.spacingValue.textContent = `${state.spacing} px`;
+		if (el.cornerValue) el.cornerValue.textContent = `${state.corner} px`;
+		if (el.bgColor) el.bgColor.value = state.background;
+
+		document.querySelectorAll('[data-ratio]').forEach((button) => {
+			button.setAttribute('aria-pressed', String(button.dataset.ratio === state.ratio));
+		});
+		document.querySelectorAll('[data-fit]').forEach((button) => {
+			button.setAttribute('aria-pressed', String(button.dataset.fit === state.fit));
+		});
+	}
+
+	function getDragIndex(event) {
+		const raw = event.dataTransfer?.getData('text/plain');
+		const parsed = Number(raw);
+		if (Number.isInteger(parsed)) return parsed;
+		return state.dragIndex;
+	}
+
+	function swapPhotos(from, to) {
+		if (!Number.isInteger(from) || !Number.isInteger(to)) return;
+		if (from === to || !state.photos[from] || !state.photos[to]) return;
+		const next = [...state.photos];
+		[next[from], next[to]] = [next[to], next[from]];
+		state.photos = next;
+		markDirty('Photo order updated.');
+		renderAll();
+	}
+
+	function shufflePhotos() {
+		for (let index = state.photos.length - 1; index > 0; index -= 1) {
+			const swapIndex = Math.floor(Math.random() * (index + 1));
+			[state.photos[index], state.photos[swapIndex]] = [state.photos[swapIndex], state.photos[index]];
+		}
+		markDirty('Photos shuffled.');
+		renderAll();
+	}
+
+	function clearPhotos() {
+		for (const photo of state.photos) {
+			URL.revokeObjectURL(photo.url);
+		}
+		state.photos = [];
+		state.templateId = 'custom-default';
+		markDirty('Waiting for photos.');
+		renderAll();
+	}
+
+	async function finishCollage() {
+		if (!state.photos.length || !el.canvas || !el.downloadLink) return;
+		await drawCollage(el.canvas);
+		const url = el.canvas.toDataURL('image/png');
+		el.downloadLink.href = url;
+		el.downloadLink.download = `photo-collage-${state.ratio.replace(':', 'x')}.png`;
+		state.finished = true;
+		if (el.downloadPanel) el.downloadPanel.classList.remove('hidden');
+		if (el.exportEmpty) el.exportEmpty.classList.add('hidden');
+		if (el.statusLine) el.statusLine.textContent = 'Finished. Download is ready.';
+	}
+
+	async function drawCollage(canvas) {
+		const ratio = ratios[state.ratio] || ratios['1:1'];
+		const count = state.photos.length;
+		const layout = getLayout(count);
+		const scale = ratio.width / 760;
+		const gap = Math.round(state.spacing * scale);
+		const padding = gap;
+		const corner = Math.round(state.corner * scale);
+		canvas.width = ratio.width;
+		canvas.height = ratio.height;
+		const context = canvas.getContext('2d');
+		if (!context) return;
+
+		context.fillStyle = state.background;
+		context.fillRect(0, 0, canvas.width, canvas.height);
+
+		const unitWidth = (canvas.width - padding * 2 - gap * (layout.columns - 1)) / layout.columns;
+		const unitHeight = (canvas.height - padding * 2 - gap * (layout.rows - 1)) / layout.rows;
+
+		for (let index = 0; index < layout.cells.length; index += 1) {
+			const cell = layout.cells[index];
+			const photo = state.photos[index];
+			if (!photo) continue;
+			await ensureLoaded(photo.image);
+			const x = padding + cell.x * (unitWidth + gap);
+			const y = padding + cell.y * (unitHeight + gap);
+			const width = unitWidth * cell.w + gap * (cell.w - 1);
+			const height = unitHeight * cell.h + gap * (cell.h - 1);
+
+			context.save();
+			roundedRect(context, x, y, width, height, corner);
+			context.clip();
+			drawImageFit(context, photo.image, x, y, width, height, state.fit);
+			context.restore();
+		}
+	}
+
+	function ensureLoaded(image) {
+		if (image.complete && image.naturalWidth) return Promise.resolve();
+		if (image.decode) return image.decode().catch(() => undefined);
+		return new Promise((resolve) => {
+			image.onload = () => resolve();
+			image.onerror = () => resolve();
+		});
+	}
+
+	function roundedRect(context, x, y, width, height, radius) {
+		const safeRadius = Math.min(radius, width / 2, height / 2);
+		context.beginPath();
+		context.moveTo(x + safeRadius, y);
+		context.lineTo(x + width - safeRadius, y);
+		context.quadraticCurveTo(x + width, y, x + width, y + safeRadius);
+		context.lineTo(x + width, y + height - safeRadius);
+		context.quadraticCurveTo(x + width, y + height, x + width - safeRadius, y + height);
+		context.lineTo(x + safeRadius, y + height);
+		context.quadraticCurveTo(x, y + height, x, y + height - safeRadius);
+		context.lineTo(x, y + safeRadius);
+		context.quadraticCurveTo(x, y, x + safeRadius, y);
+		context.closePath();
+	}
+
+	function drawImageFit(context, image, x, y, width, height, fit) {
+		const scale =
+			fit === 'cover'
+				? Math.max(width / image.naturalWidth, height / image.naturalHeight)
+				: Math.min(width / image.naturalWidth, height / image.naturalHeight);
+		const drawWidth = image.naturalWidth * scale;
+		const drawHeight = image.naturalHeight * scale;
+		const drawX = x + (width - drawWidth) / 2;
+		const drawY = y + (height - drawHeight) / 2;
+		context.drawImage(image, drawX, drawY, drawWidth, drawHeight);
+	}
+
+	el.input?.addEventListener('change', (event) => {
+		addFiles(event.target.files);
+		event.target.value = '';
+	});
+
+	el.addMore?.addEventListener('click', () => el.input?.click());
+	el.clearPhotos?.addEventListener('click', clearPhotos);
+	el.smartTemplate?.addEventListener('click', () => {
+		state.templateId = smartTemplateForCount(state.photos.length);
+		markDirty(`${getTemplate().name} selected.`);
+		renderAll();
+	});
+	el.shuffle?.addEventListener('click', shufflePhotos);
+	el.finish?.addEventListener('click', finishCollage);
+
+	el.dropZone?.addEventListener('dragover', (event) => {
+		event.preventDefault();
+		el.dropZone?.classList.add('border-ink', 'bg-canvas');
+	});
+	el.dropZone?.addEventListener('dragleave', () => {
+		el.dropZone?.classList.remove('border-ink', 'bg-canvas');
+	});
+	el.dropZone?.addEventListener('drop', (event) => {
+		event.preventDefault();
+		el.dropZone?.classList.remove('border-ink', 'bg-canvas');
+		addFiles(event.dataTransfer?.files);
+	});
+
+	document.querySelectorAll('[data-ratio]').forEach((button) => {
+		button.addEventListener('click', () => {
+			state.ratio = button.dataset.ratio || '1:1';
+			markDirty(`${state.ratio} selected.`);
+			renderAll();
+		});
+	});
+
+	document.querySelectorAll('[data-fit]').forEach((button) => {
+		button.addEventListener('click', () => {
+			state.fit = button.dataset.fit || 'cover';
+			markDirty(`${state.fit} fit selected.`);
+			renderAll();
+		});
+	});
+
+	document.querySelectorAll('[data-color]').forEach((button) => {
+		button.addEventListener('click', () => {
+			state.background = button.dataset.color || '#ffffff';
+			markDirty('Background color updated.');
+			renderAll();
+		});
+	});
+
+	el.spacing?.addEventListener('input', (event) => {
+		state.spacing = Number(event.target.value);
+		markDirty('Spacing updated.');
+		renderAll();
+	});
+
+	el.corner?.addEventListener('input', (event) => {
+		state.corner = Number(event.target.value);
+		markDirty('Corner radius updated.');
+		renderAll();
+	});
+
+	el.bgColor?.addEventListener('input', (event) => {
+		state.background = event.target.value;
+		markDirty('Background color updated.');
+		renderAll();
+	});
+
+	renderAll();
+</script>
