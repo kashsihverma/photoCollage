@@ -17,7 +17,7 @@ const escapeXml = (value: string) =>
 		.replaceAll('>', '&gt;');
 
 export const GET: APIRoute = ({ site }) => {
-	const baseUrl = site ?? new URL('https://photocollagemake.com');
+	const baseUrl = site ?? new URL('https://onlinephotocollage.com');
 	const urls = sitemapPages
 		.map(({ path, changefreq, priority }) => {
 			const loc = new URL(path, baseUrl).toString();

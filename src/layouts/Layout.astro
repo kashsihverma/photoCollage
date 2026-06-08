@@ -15,8 +15,8 @@ interface Props {
 }
 
 const {
-	canonical = 'https://photocollagemake.com/',
-	title = 'Photo Collage Maker | photocollagemake.com',
+	canonical = 'https://onlinephotocollage.com/',
+	title = 'Photo Collage Maker | onlinephotocollage.com',
 	description = 'Create and download clean photo collages from multiple uploaded images.',
 	image = '/Icons/web-app-manifest-512x512.png',
 	imageAlt = 'Photo Collage Maker app icon',
@@ -27,13 +27,23 @@ const {
 	robots = 'index, follow, max-image-preview:large',
 } = Astro.props;
 
-const siteUrl = 'https://photocollagemake.com';
+const siteUrl = 'https://onlinephotocollage.com';
 const absoluteImage = image.startsWith('http') ? image : new URL(image, siteUrl).toString();
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
+		<script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-FDYNQEJ54E"></script>
+		<script is:inline>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag('js', new Date());
+
+			gtag('config', 'G-FDYNQEJ54E');
+		</script>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="description" content={description} />

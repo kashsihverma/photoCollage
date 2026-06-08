@@ -9,6 +9,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "check": "astro check",
+    "deploy": "npm run build && wrangler deploy",
+    "deploy:dry-run": "npm run build && wrangler deploy --dry-run",
     "audit:prod": "npm audit --omit=dev",
     "preview": "astro preview",
     "astro": "astro"
@@ -21,7 +23,8 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "wrangler": "^4.98.0"
   },
   "overrides": {
     "volar-service-yaml": "0.0.71"
