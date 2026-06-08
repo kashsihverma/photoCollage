@@ -19,8 +19,26 @@ const {
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="description" content={description} />
 		<meta name="theme-color" content="#fafafa" />
+		<script is:inline>
+			(() => {
+				try {
+					const savedTheme = localStorage.getItem('photo-collage-theme');
+					const theme = savedTheme === 'dark' ? 'dark' : 'light';
+					document.documentElement.dataset.theme = theme;
+					document.documentElement.style.colorScheme = theme;
+				} catch {
+					document.documentElement.dataset.theme = 'light';
+					document.documentElement.style.colorScheme = 'light';
+				}
+			})();
+		</script>
 		<link rel="canonical" href="https://photocollagemake.com/" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" type="image/png" href="/Icons/favicon-96x96.png" sizes="96x96" />
+		<link rel="icon" type="image/svg+xml" href="/Icons/favicon.svg" />
+		<link rel="shortcut icon" href="/Icons/favicon.ico" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/Icons/apple-touch-icon.png" />
+		<meta name="apple-mobile-web-app-title" content="Collage" />
+		<link rel="manifest" href="/Icons/site.webmanifest" />
 		<meta property="og:type" content="website" />
 		<meta property="og:url" content="https://photocollagemake.com/" />
 		<meta property="og:title" content={title} />

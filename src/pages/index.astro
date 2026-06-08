@@ -1,252 +1,266 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-import checkIcon from 'lucide-static/icons/check.svg?raw';
+import copyIcon from 'lucide-static/icons/copy.svg?raw';
 import downloadIcon from 'lucide-static/icons/download.svg?raw';
-import gridIcon from 'lucide-static/icons/grid-3x3.svg?raw';
-import imagePlusIcon from 'lucide-static/icons/image-plus.svg?raw';
 import imagesIcon from 'lucide-static/icons/images.svg?raw';
-import settingsIcon from 'lucide-static/icons/settings-2.svg?raw';
-import shuffleIcon from 'lucide-static/icons/shuffle.svg?raw';
+import layersIcon from 'lucide-static/icons/layers-3.svg?raw';
+import layoutIcon from 'lucide-static/icons/layout-template.svg?raw';
+import moonIcon from 'lucide-static/icons/moon.svg?raw';
+import paletteIcon from 'lucide-static/icons/palette.svg?raw';
+import redoIcon from 'lucide-static/icons/redo-2.svg?raw';
+import saveIcon from 'lucide-static/icons/save.svg?raw';
+import searchIcon from 'lucide-static/icons/search.svg?raw';
+import shapesIcon from 'lucide-static/icons/shapes.svg?raw';
 import sparklesIcon from 'lucide-static/icons/sparkles.svg?raw';
+import sunIcon from 'lucide-static/icons/sun.svg?raw';
+import textIcon from 'lucide-static/icons/type.svg?raw';
 import trashIcon from 'lucide-static/icons/trash-2.svg?raw';
+import undoIcon from 'lucide-static/icons/undo-2.svg?raw';
 import uploadIcon from 'lucide-static/icons/upload.svg?raw';
 ---
 
 <Layout
-	title="Photo Collage Maker | photocollagemake.com"
-	description="Upload multiple photos, choose a collage template, tune spacing and corners, finish, and download a PNG collage."
+	title="Photo Collage Maker | Premium collage editor"
+	description="Create premium photo collages with templates, photos, text, stickers, frames, backgrounds, and high-resolution PNG or JPG export."
 >
-	<header class="sticky top-0 z-30 border-b border-hairline bg-canvas/90 backdrop-blur-xl">
-		<div class="pc-container flex h-16 items-center justify-between gap-4">
-			<a href="/" class="flex items-center gap-2 text-sm font-medium text-ink" aria-label="Photo Collage home">
-				<span class="grid h-7 w-7 place-items-center rounded-full bg-ink text-canvas">
-					<span class="pc-icon [&>svg]:h-3.5 [&>svg]:w-3.5" set:html={gridIcon} aria-hidden="true"></span>
-				</span>
-				<span>Photo Collage</span>
-			</a>
-			<nav class="hidden items-center gap-1 text-sm text-body md:flex" aria-label="Primary">
-				<a class="rounded-full px-3 py-2 hover:bg-canvas-soft-2 hover:text-ink" href="#studio">Studio</a>
-				<a class="rounded-full px-3 py-2 hover:bg-canvas-soft-2 hover:text-ink" href="#templates">Templates</a>
-				<a class="rounded-full px-3 py-2 hover:bg-canvas-soft-2 hover:text-ink" href="#export">Export</a>
-			</nav>
-			<a class="hidden text-sm font-medium text-body sm:inline-flex" href="https://photocollagemake.com">
-				photocollagemake.com
-			</a>
+	<header class="pc-topbar">
+		<a href="/" class="pc-brand" aria-label="Photo Collage home">
+			<span class="pc-brand-mark">
+				<img src="/Icons/favicon.svg" alt="" width="30" height="30" loading="eager" decoding="async" />
+			</span>
+			<span>Photo Collage</span>
+		</a>
+
+		<div class="pc-toolbar" aria-label="Editor toolbar">
+			<button id="undo-action" class="pc-tool-button" type="button" aria-label="Undo">
+				<span class="pc-icon" set:html={undoIcon} aria-hidden="true"></span>
+			</button>
+			<button id="redo-action" class="pc-tool-button" type="button" aria-label="Redo">
+				<span class="pc-icon" set:html={redoIcon} aria-hidden="true"></span>
+			</button>
+			<span class="pc-toolbar-divider" aria-hidden="true"></span>
+			<select id="size-select" class="pc-select" aria-label="Export size"></select>
+			<select id="format-select" class="pc-select" aria-label="Export format">
+				<option value="png">PNG</option>
+				<option value="jpeg">JPG</option>
+			</select>
+		</div>
+
+		<div class="pc-top-actions">
+			<button id="theme-toggle" class="pc-button pc-button-secondary pc-theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false">
+				<span class="pc-icon pc-theme-icon pc-theme-icon-moon" set:html={moonIcon} aria-hidden="true"></span>
+				<span class="pc-icon pc-theme-icon pc-theme-icon-sun" set:html={sunIcon} aria-hidden="true"></span>
+				<span class="pc-theme-label">Dark</span>
+			</button>
+			<button id="save-design" class="pc-button pc-button-secondary" type="button">
+				<span class="pc-icon" set:html={saveIcon} aria-hidden="true"></span>
+				Save
+			</button>
+			<button id="finish-collage" class="pc-button pc-button-primary" type="button">
+				<span class="pc-icon" set:html={downloadIcon} aria-hidden="true"></span>
+				Download
+			</button>
 		</div>
 	</header>
 
-	<main class="min-h-screen overflow-hidden bg-canvas-soft text-ink">
-		<section class="relative border-b border-hairline bg-canvas">
-			<div class="pc-container relative grid gap-8 py-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-end lg:py-16">
-				<div class="max-w-3xl">
-					<div class="mb-5 inline-flex items-center gap-2 rounded-full border border-hairline bg-canvas px-3 py-1.5 text-sm text-body shadow-vercel-2">
-						<span class="pc-icon text-ink [&>svg]:h-3.5 [&>svg]:w-3.5" set:html={sparklesIcon} aria-hidden="true"></span>
-						Local collage studio
-					</div>
-					<h1 class="max-w-4xl text-[clamp(2.6rem,8vw,5.5rem)] font-semibold leading-[0.95] text-ink">
-						Photo collage maker.
-					</h1>
-					<p class="mt-5 max-w-2xl text-lg leading-8 text-body">
-						Upload photos, choose a layout, finish the composition, and export a clean PNG from your browser.
-					</p>
-				</div>
-				<div class="pc-panel hidden p-3 md:block">
-					<div class="grid aspect-[16/9] grid-cols-5 grid-rows-4 gap-2 rounded-vercel bg-canvas-soft-2 p-2">
-						<div class="col-span-2 row-span-4 rounded-vercel bg-[linear-gradient(135deg,#171717,#4d4d4d)]"></div>
-						<div class="col-span-3 row-span-2 rounded-vercel bg-[linear-gradient(135deg,#d3e5ff,#50e3c2)]"></div>
-						<div class="col-span-1 row-span-2 rounded-vercel bg-[linear-gradient(135deg,#f5f5f5,#ffffff)]"></div>
-						<div class="col-span-2 row-span-2 rounded-vercel bg-[linear-gradient(135deg,#ffefcf,#ff0080)]"></div>
-					</div>
-				</div>
-			</div>
-		</section>
+	<main id="studio" class="pc-editor-app">
+		<aside class="pc-sidebar" aria-label="Editor panels">
+			<nav class="pc-panel-tabs" aria-label="Tools">
+				<button class="pc-panel-tab" type="button" data-panel="templates" aria-pressed="true" title="Templates">
+					<span class="pc-icon" set:html={layoutIcon} aria-hidden="true"></span>
+					<span>Templates</span>
+				</button>
+				<button class="pc-panel-tab" type="button" data-panel="uploads" aria-pressed="false" title="Uploads">
+					<span class="pc-icon" set:html={imagesIcon} aria-hidden="true"></span>
+					<span>Photos</span>
+				</button>
+				<button class="pc-panel-tab" type="button" data-panel="text" aria-pressed="false" title="Text">
+					<span class="pc-icon" set:html={textIcon} aria-hidden="true"></span>
+					<span>Text</span>
+				</button>
+				<button class="pc-panel-tab" type="button" data-panel="elements" aria-pressed="false" title="Elements">
+					<span class="pc-icon" set:html={shapesIcon} aria-hidden="true"></span>
+					<span>Elements</span>
+				</button>
+				<button class="pc-panel-tab" type="button" data-panel="backgrounds" aria-pressed="false" title="Backgrounds">
+					<span class="pc-icon" set:html={paletteIcon} aria-hidden="true"></span>
+					<span>Canvas</span>
+				</button>
+				<button class="pc-panel-tab" type="button" data-panel="layers" aria-pressed="false" title="Layers">
+					<span class="pc-icon" set:html={layersIcon} aria-hidden="true"></span>
+					<span>Layers</span>
+				</button>
+			</nav>
 
-		<section id="studio" class="pc-container py-6 lg:py-8">
-			<div class="grid gap-4 xl:grid-cols-[320px_minmax(0,1fr)_360px]">
-				<aside class="space-y-4">
-					<section class="pc-panel p-4" aria-labelledby="upload-title">
-						<div class="mb-4 flex items-center justify-between gap-3">
-							<div>
-								<p class="pc-label">Photos</p>
-								<h2 id="upload-title" class="text-xl font-semibold">Upload</h2>
-							</div>
-							<span class="pc-icon text-body [&>svg]:h-5 [&>svg]:w-5" set:html={imagesIcon} aria-hidden="true"></span>
+			<div class="pc-panel-browser">
+				<label class="pc-panel-search">
+					<span class="pc-icon" set:html={searchIcon} aria-hidden="true"></span>
+					<input id="asset-search" type="search" autocomplete="off" placeholder="Search assets" aria-label="Search active panel" />
+				</label>
+
+				<section class="pc-panel-view" data-panel-view="templates" aria-labelledby="templates-title">
+					<div class="pc-panel-heading">
+						<div>
+							<p class="pc-label">Gallery</p>
+							<h1 id="templates-title">Templates</h1>
 						</div>
+					</div>
+					<div id="category-list" class="pc-category-list" aria-label="Template categories"></div>
+					<label class="pc-template-size-toggle">
+						<span>Show templates with the same size</span>
+						<input type="checkbox" checked />
+					</label>
+					<div id="template-list" class="pc-template-gallery" aria-live="polite"></div>
+				</section>
 
-						<label
-							id="drop-zone"
-							for="photo-input"
-							class="flex min-h-40 cursor-pointer flex-col items-center justify-center rounded-vercel-lg border border-dashed border-hairline-strong bg-canvas-soft p-5 text-center transition hover:border-ink hover:bg-canvas"
-						>
-							<span class="mb-3 grid h-10 w-10 place-items-center rounded-full bg-ink text-canvas">
-								<span class="pc-icon [&>svg]:h-4.5 [&>svg]:w-4.5" set:html={uploadIcon} aria-hidden="true"></span>
-							</span>
-							<span class="text-sm font-medium text-ink">Drop images</span>
-							<span class="mt-1 text-sm text-mute">PNG, JPG, WebP, AVIF</span>
-							<input id="photo-input" class="sr-only" type="file" accept="image/*" multiple />
-						</label>
+				<section class="pc-panel-view hidden" data-panel-view="uploads" aria-labelledby="upload-title">
+					<div class="pc-panel-heading">
+						<div>
+							<p class="pc-label">Photos</p>
+							<h2 id="upload-title">Uploads</h2>
+						</div>
+						<p id="photo-count" class="pc-count">0 photos</p>
+					</div>
 
-						<div class="mt-4 flex flex-wrap items-center gap-2">
-							<button id="add-more" class="pc-button pc-button-secondary" type="button">
-								<span class="pc-icon" set:html={imagePlusIcon} aria-hidden="true"></span>
-								Add photos
+					<label id="drop-zone" for="photo-input" class="pc-drop-zone">
+						<span class="pc-drop-icon">
+							<span class="pc-icon" set:html={uploadIcon} aria-hidden="true"></span>
+						</span>
+						<span>Drop photos</span>
+						<small>PNG, JPG, WebP, AVIF</small>
+						<input id="photo-input" class="sr-only" type="file" accept="image/*" multiple />
+					</label>
+
+					<div class="pc-inline-actions">
+						<button id="clear-photos" class="pc-button pc-button-secondary pc-delete-all" type="button" aria-label="Delete all uploaded photos">
+							<span class="pc-icon" set:html={trashIcon} aria-hidden="true"></span>
+							Delete all
+						</button>
+					</div>
+
+					<div id="photo-tray" class="pc-upload-grid" aria-live="polite"></div>
+				</section>
+
+				<section class="pc-panel-view hidden" data-panel-view="text" aria-labelledby="text-title">
+					<div class="pc-panel-heading">
+						<div>
+							<p class="pc-label">Typography</p>
+							<h2 id="text-title">Text</h2>
+						</div>
+						<span class="pc-icon text-body" set:html={textIcon} aria-hidden="true"></span>
+					</div>
+					<button id="add-text" class="pc-button pc-button-primary w-full" type="button">
+						<span class="pc-icon" set:html={textIcon} aria-hidden="true"></span>
+						Add text
+					</button>
+					<div id="text-preset-list" class="pc-preset-list"></div>
+				</section>
+
+				<section class="pc-panel-view hidden" data-panel-view="elements" aria-labelledby="elements-title">
+					<div class="pc-panel-heading">
+						<div>
+							<p class="pc-label">Decor</p>
+							<h2 id="elements-title">Elements</h2>
+						</div>
+						<span class="pc-icon text-body" set:html={sparklesIcon} aria-hidden="true"></span>
+					</div>
+					<div id="element-list" class="pc-element-grid"></div>
+				</section>
+
+				<section class="pc-panel-view hidden" data-panel-view="backgrounds" aria-labelledby="backgrounds-title">
+					<div class="pc-panel-heading">
+						<div>
+							<p class="pc-label">Canvas</p>
+							<h2 id="backgrounds-title">Backgrounds</h2>
+						</div>
+						<span class="pc-icon text-body" set:html={paletteIcon} aria-hidden="true"></span>
+					</div>
+					<div class="pc-background-photo-panel">
+						<div class="pc-background-actions">
+							<button id="add-background-photo" class="pc-button pc-button-secondary" type="button">
+								<span class="pc-icon" set:html={uploadIcon} aria-hidden="true"></span>
+								Upload photo
 							</button>
-							<button id="clear-photos" class="pc-icon-button" type="button" aria-label="Clear photos">
+							<button id="clear-background-photo" class="pc-icon-button" type="button" aria-label="Clear background photo">
 								<span class="pc-icon" set:html={trashIcon} aria-hidden="true"></span>
 							</button>
 						</div>
-
-						<div class="mt-4">
-							<div class="mb-2 flex items-center justify-between">
-								<p class="pc-label">Order</p>
-								<p id="photo-count" class="text-xs text-mute">0 photos</p>
-							</div>
-							<div id="photo-tray" class="grid grid-cols-4 gap-2" aria-live="polite"></div>
-						</div>
-					</section>
-
-					<section class="pc-panel p-4" aria-labelledby="quick-title">
-						<div class="mb-4 flex items-center justify-between">
-							<div>
-								<p class="pc-label">Actions</p>
-								<h2 id="quick-title" class="text-xl font-semibold">Flow</h2>
-							</div>
-							<span class="pc-icon text-body [&>svg]:h-5 [&>svg]:w-5" set:html={checkIcon} aria-hidden="true"></span>
-						</div>
-						<div class="grid gap-2">
-							<button id="smart-template" class="pc-button pc-button-secondary justify-start" type="button">
-								<span class="pc-icon" set:html={sparklesIcon} aria-hidden="true"></span>
-								Smart template
-							</button>
-							<button id="shuffle-photos" class="pc-button pc-button-secondary justify-start" type="button">
-								<span class="pc-icon" set:html={shuffleIcon} aria-hidden="true"></span>
-								Shuffle photos
-							</button>
-							<button id="finish-collage" class="pc-button pc-button-primary justify-start" type="button" disabled>
-								<span class="pc-icon" set:html={checkIcon} aria-hidden="true"></span>
-								Finish
-							</button>
-						</div>
-						<p id="status-line" class="mt-3 text-sm text-mute" aria-live="polite">Waiting for photos.</p>
-					</section>
-				</aside>
-
-				<section class="pc-panel min-h-[560px] p-3 lg:p-5" aria-labelledby="preview-title">
-					<div class="mb-4 flex flex-wrap items-center justify-between gap-3 px-1">
-						<div>
-							<p class="pc-label">Canvas</p>
-							<h2 id="preview-title" class="text-xl font-semibold">Preview</h2>
-						</div>
-						<div class="flex items-center gap-2 text-sm text-body">
-							<span id="active-template-label">Custom default</span>
-							<span class="h-1 w-1 rounded-full bg-hairline-strong"></span>
-							<span id="active-size-label">1:1</span>
-						</div>
+						<input id="background-photo-input" class="sr-only" type="file" accept="image/*" multiple />
+						<div id="background-photo-list" class="pc-background-photo-grid"></div>
 					</div>
-					<div class="flex min-h-[500px] items-center justify-center rounded-vercel-lg bg-canvas-soft-2 p-3 sm:p-6">
-						<div id="collage-preview" class="pc-collage" aria-label="Collage preview"></div>
-					</div>
+					<label class="pc-background-tone pc-field">
+						<span class="pc-field-row">
+							<span>Background tone</span>
+							<span id="background-tone-value">Normal</span>
+						</span>
+						<input id="background-tone-control" type="range" min="0" max="100" step="1" value="50" />
+					</label>
+					<div id="background-list" class="pc-background-grid"></div>
 				</section>
 
-				<aside class="space-y-4">
-					<section id="templates" class="pc-panel p-4" aria-labelledby="templates-title">
-						<div class="mb-4 flex items-center justify-between gap-3">
-							<div>
-								<p class="pc-label">Layouts</p>
-								<h2 id="templates-title" class="text-xl font-semibold">Templates</h2>
-							</div>
-							<span class="pc-icon text-body [&>svg]:h-5 [&>svg]:w-5" set:html={gridIcon} aria-hidden="true"></span>
+				<section class="pc-panel-view hidden" data-panel-view="layers" aria-labelledby="layers-title">
+					<div class="pc-panel-heading">
+						<div>
+							<p class="pc-label">Objects</p>
+							<h2 id="layers-title">Layers</h2>
 						</div>
-						<div id="template-list" class="grid max-h-[640px] grid-cols-2 gap-3 overflow-y-auto pr-1"></div>
-					</section>
+						<span class="pc-icon text-body" set:html={layersIcon} aria-hidden="true"></span>
+					</div>
+					<div id="layer-list" class="pc-layer-list"></div>
+				</section>
+			</div>
+		</aside>
 
-					<section class="pc-panel p-4" aria-labelledby="settings-title">
-						<div class="mb-4 flex items-center justify-between gap-3">
-							<div>
-								<p class="pc-label">Controls</p>
-								<h2 id="settings-title" class="text-xl font-semibold">Settings</h2>
-							</div>
-							<span class="pc-icon text-body [&>svg]:h-5 [&>svg]:w-5" set:html={settingsIcon} aria-hidden="true"></span>
-						</div>
+		<section class="pc-workspace" aria-labelledby="preview-title">
+			<div class="pc-workspace-header">
+				<div>
+					<p class="pc-label">Canvas</p>
+					<h2 id="preview-title">Editor</h2>
+				</div>
+				<div class="pc-active-meta">
+					<span id="active-template-label">Love Polaroids</span>
+					<span aria-hidden="true">/</span>
+					<span id="active-size-label">Instagram post</span>
+				</div>
+			</div>
 
-						<div class="space-y-5">
-							<div>
-								<div class="mb-2 flex items-center justify-between">
-									<label class="pc-label" for="ratio-1-1">Aspect</label>
-									<span id="ratio-readout" class="text-xs text-mute">1:1</span>
-								</div>
-								<div class="grid grid-cols-5 gap-2" role="group" aria-label="Aspect ratio">
-									<button id="ratio-1-1" class="pc-ratio h-9 rounded-vercel-sm" type="button" data-ratio="1:1">1:1</button>
-									<button class="pc-ratio h-9 rounded-vercel-sm" type="button" data-ratio="4:5">4:5</button>
-									<button class="pc-ratio h-9 rounded-vercel-sm" type="button" data-ratio="16:9">16:9</button>
-									<button class="pc-ratio h-9 rounded-vercel-sm" type="button" data-ratio="9:16">9:16</button>
-									<button class="pc-ratio h-9 rounded-vercel-sm" type="button" data-ratio="3:2">3:2</button>
-								</div>
-							</div>
+			<div id="editor-stage" class="pc-stage">
+				<div id="snap-guide-x" class="pc-guide pc-guide-x hidden" aria-hidden="true"></div>
+				<div id="snap-guide-y" class="pc-guide pc-guide-y hidden" aria-hidden="true"></div>
+				<div id="collage-preview" class="pc-design-surface" aria-label="Editable collage canvas"></div>
+			</div>
 
-							<div>
-								<div class="mb-2 flex items-center justify-between">
-									<label class="pc-label" for="spacing-control">Space</label>
-									<span id="spacing-value" class="text-xs text-mute">12 px</span>
-								</div>
-								<input id="spacing-control" class="pc-range" type="range" min="0" max="40" value="12" />
-							</div>
-
-							<div>
-								<div class="mb-2 flex items-center justify-between">
-									<label class="pc-label" for="corner-control">Corner</label>
-									<span id="corner-value" class="text-xs text-mute">10 px</span>
-								</div>
-								<input id="corner-control" class="pc-range" type="range" min="0" max="36" value="10" />
-							</div>
-
-							<div>
-								<div class="mb-2 flex items-center justify-between">
-									<label class="pc-label" for="bg-color">Color</label>
-									<input id="bg-color" class="h-8 w-12 rounded-vercel-sm border border-hairline bg-canvas p-1" type="color" value="#ffffff" />
-								</div>
-								<div class="grid grid-cols-6 gap-2" role="group" aria-label="Background colors">
-									<button class="pc-swatch h-8 rounded-vercel-sm" type="button" data-color="#ffffff" style="background:#ffffff" aria-label="White"></button>
-									<button class="pc-swatch h-8 rounded-vercel-sm" type="button" data-color="#fafafa" style="background:#fafafa" aria-label="Soft white"></button>
-									<button class="pc-swatch h-8 rounded-vercel-sm" type="button" data-color="#171717" style="background:#171717" aria-label="Ink"></button>
-									<button class="pc-swatch h-8 rounded-vercel-sm" type="button" data-color="#d3e5ff" style="background:#d3e5ff" aria-label="Blue"></button>
-									<button class="pc-swatch h-8 rounded-vercel-sm" type="button" data-color="#ffefcf" style="background:#ffefcf" aria-label="Amber"></button>
-									<button class="pc-swatch h-8 rounded-vercel-sm" type="button" data-color="#d8ccf1" style="background:#d8ccf1" aria-label="Violet"></button>
-								</div>
-							</div>
-
-							<div>
-								<p class="pc-label mb-2">Image fit</p>
-								<div class="grid grid-cols-2 gap-2" role="group" aria-label="Image fit">
-									<button class="pc-fit h-9 rounded-vercel-sm" type="button" data-fit="cover">Cover</button>
-									<button class="pc-fit h-9 rounded-vercel-sm" type="button" data-fit="contain">Contain</button>
-								</div>
-							</div>
-						</div>
-					</section>
-
-					<section id="export" class="pc-panel p-4" aria-labelledby="export-title">
-						<div class="mb-4 flex items-center justify-between gap-3">
-							<div>
-								<p class="pc-label">Download</p>
-								<h2 id="export-title" class="text-xl font-semibold">Export</h2>
-							</div>
-							<span class="pc-icon text-body [&>svg]:h-5 [&>svg]:w-5" set:html={downloadIcon} aria-hidden="true"></span>
-						</div>
-						<div id="download-panel" class="hidden rounded-vercel bg-canvas-soft p-3">
-							<canvas id="export-canvas" class="hidden"></canvas>
-							<p class="mb-3 text-sm text-body">Your collage is ready.</p>
-							<a id="download-link" class="pc-button pc-button-primary w-full" href="#" download="photo-collage.png">
-								<span class="pc-icon" set:html={downloadIcon} aria-hidden="true"></span>
-								Download PNG
-							</a>
-						</div>
-						<p id="export-empty" class="text-sm text-mute">Finish the collage to unlock the download.</p>
-					</section>
-				</aside>
+			<div class="pc-statusbar">
+				<p id="status-line" aria-live="polite">Choose a template or upload photos.</p>
+				<div id="download-panel" class="pc-download-panel hidden">
+					<canvas id="export-canvas" class="hidden"></canvas>
+					<a id="download-link" class="pc-button pc-button-primary" href="#" download="photo-collage.png">
+						<span class="pc-icon" set:html={downloadIcon} aria-hidden="true"></span>
+						Download ready
+					</a>
+				</div>
+				<p id="export-empty" class="sr-only">Download the collage from the top toolbar.</p>
 			</div>
 		</section>
+
+		<aside class="pc-inspector" aria-label="Selected object controls">
+			<div class="pc-inspector-heading">
+				<div>
+					<p class="pc-label">Selection</p>
+					<h2>Adjust</h2>
+				</div>
+				<div class="pc-inline-actions">
+					<button id="duplicate-layer" class="pc-icon-button" type="button" aria-label="Duplicate selected object">
+						<span class="pc-icon" set:html={copyIcon} aria-hidden="true"></span>
+					</button>
+					<button id="delete-layer" class="pc-icon-button" type="button" aria-label="Delete selected object">
+						<span class="pc-icon" set:html={trashIcon} aria-hidden="true"></span>
+					</button>
+				</div>
+			</div>
+			<div id="inspector-panel" class="pc-inspector-panel"></div>
+		</aside>
 	</main>
 </Layout>
 
