@@ -1,0 +1,85 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const canonical = 'https://photocollagemake.com/terms-and-conditions/';
+---
+
+<Layout
+	title="Terms & Conditions | Photo Collage Maker"
+	description="Read the terms and conditions for using Photo Collage Maker, including acceptable use, ownership, downloads, availability, and contact details."
+	canonical={canonical}
+>
+	<header class="pc-site-header">
+		<a href="/" class="pc-site-header-brand" aria-label="Photo Collage home">
+			<img src="/Icons/favicon.svg" alt="" width="30" height="30" loading="eager" decoding="async" />
+			<span>Photo Collage</span>
+		</a>
+		<nav class="pc-site-header-links" aria-label="Website">
+			<a href="/">Editor</a>
+			<a href="/about-us/">About</a>
+			<a href="/contact-us/">Contact</a>
+			<a href="/privacy-policy/">Privacy</a>
+		</nav>
+	</header>
+
+	<main class="pc-doc-page">
+		<section class="pc-doc-container pc-doc-hero" aria-labelledby="terms-title">
+			<p class="pc-label">Terms & conditions</p>
+			<h1 id="terms-title">Terms & Conditions</h1>
+			<p>Last updated: June 8, 2026</p>
+		</section>
+
+		<section class="pc-doc-container pc-doc-grid" aria-label="Terms and conditions details">
+			<div class="pc-doc-body">
+				<h2>Using the website</h2>
+				<p>
+					By using Photo Collage Maker, you agree to use the website responsibly and only for lawful purposes. You are responsible for the photos, text, and other content you upload or add to your collage.
+				</p>
+				<h2>Your content</h2>
+				<p>
+					You keep ownership of the photos and designs you create. You should only upload content that you own or have permission to use, especially if you plan to publish, print, or share the final collage.
+				</p>
+				<h2>Downloads and exports</h2>
+				<p>
+					The editor provides export tools for convenience. You are responsible for reviewing the final downloaded file before posting, printing, sending, or using it commercially.
+				</p>
+				<h2>Availability</h2>
+				<p>
+					We may update, change, pause, or remove parts of the website at any time. We work to keep the tool useful and reliable, but we do not guarantee uninterrupted access.
+				</p>
+				<h2>Prohibited use</h2>
+				<p>
+					Do not use the website to create or distribute unlawful, harmful, infringing, abusive, or deceptive content. Do not attempt to disrupt, reverse engineer, or misuse the service.
+				</p>
+				<h2>Contact</h2>
+				<p>
+					Questions about these terms can be sent to <a href="mailto:support@photocollagemake.com">support@photocollagemake.com</a>.
+				</p>
+			</div>
+
+			<aside class="pc-doc-panel">
+				<h2>Terms summary</h2>
+				<ul>
+					<li>Use the editor lawfully and responsibly.</li>
+					<li>Only upload content you can use.</li>
+					<li>Review exports before sharing or printing.</li>
+					<li>Service features may change over time.</li>
+				</ul>
+			</aside>
+		</section>
+	</main>
+
+	<footer class="pc-site-footer" aria-label="Website links">
+		<div class="pc-site-footer-inner">
+			<a href="/" class="pc-site-footer-brand" aria-label="Photo Collage home">
+				<img src="/Icons/favicon.svg" alt="" width="28" height="28" loading="lazy" decoding="async" />
+				<span>Photo Collage</span>
+			</a>
+			<nav class="pc-site-footer-links" aria-label="Footer">
+				<a href="/about-us/">About us</a>
+				<a href="/contact-us/">Contact us</a>
+				<a href="/privacy-policy/">Privacy policy</a>
+			</nav>
+		</div>
+	</footer>
+</Layout>

@@ -1,0 +1,60 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+interface Props {
+	error?: unknown;
+}
+
+const { error } = Astro.props;
+const canonical = 'https://photocollagemake.com/500';
+const errorLabel = error instanceof Error ? 'A server error interrupted this request.' : 'Something went wrong while loading this page.';
+---
+
+<Layout
+	title="500 Server Error | Photo Collage Maker"
+	description="Something went wrong while loading Photo Collage Maker. Return to the editor or contact support."
+	canonical={canonical}
+	robots="noindex, follow"
+>
+	<header class="pc-site-header">
+		<a href="/" class="pc-site-header-brand" aria-label="Photo Collage home">
+			<img src="/Icons/favicon.svg" alt="" width="30" height="30" loading="eager" decoding="async" />
+			<span>Photo Collage</span>
+		</a>
+		<nav class="pc-site-header-links" aria-label="Website">
+			<a href="/">Editor</a>
+			<a href="/about-us/">About</a>
+			<a href="/contact-us/">Contact</a>
+			<a href="/privacy-policy/">Privacy</a>
+		</nav>
+	</header>
+
+	<main class="pc-doc-page pc-error-page">
+		<section class="pc-doc-container pc-error-panel" aria-labelledby="server-error-title">
+			<p class="pc-error-code">500</p>
+			<h1 id="server-error-title">Something went wrong</h1>
+			<p>
+				{errorLabel} Please refresh the page, return to the editor, or contact support if the problem continues. We keep this message general to avoid exposing technical details.
+			</p>
+			<div class="pc-error-actions">
+				<a class="pc-button pc-button-primary" href="/">Open editor</a>
+				<a class="pc-button pc-button-secondary" href="/contact-us/">Contact support</a>
+			</div>
+		</section>
+	</main>
+
+	<footer class="pc-site-footer" aria-label="Website links">
+		<div class="pc-site-footer-inner">
+			<a href="/" class="pc-site-footer-brand" aria-label="Photo Collage home">
+				<img src="/Icons/favicon.svg" alt="" width="28" height="28" loading="lazy" decoding="async" />
+				<span>Photo Collage</span>
+			</a>
+			<nav class="pc-site-footer-links" aria-label="Footer">
+				<a href="/about-us/">About us</a>
+				<a href="/contact-us/">Contact us</a>
+				<a href="/privacy-policy/">Privacy policy</a>
+				<a href="/terms-and-conditions/">Terms & conditions</a>
+			</nav>
+		</div>
+	</footer>
+</Layout>

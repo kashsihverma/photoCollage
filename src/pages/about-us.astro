@@ -1,0 +1,75 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const canonical = 'https://photocollagemake.com/about-us/';
+---
+
+<Layout
+	title="About Us | Photo Collage Maker"
+	description="Learn about Photo Collage Maker, a free online collage editor for creating Instagram collage stories, posts, and photo collage designs."
+	canonical={canonical}
+>
+	<header class="pc-site-header">
+		<a href="/" class="pc-site-header-brand" aria-label="Photo Collage home">
+			<img src="/Icons/favicon.svg" alt="" width="30" height="30" loading="eager" decoding="async" />
+			<span>Photo Collage</span>
+		</a>
+		<nav class="pc-site-header-links" aria-label="Website">
+			<a href="/">Editor</a>
+			<a href="/contact-us/">Contact</a>
+			<a href="/privacy-policy/">Privacy</a>
+			<a href="/terms-and-conditions/">Terms</a>
+		</nav>
+	</header>
+
+	<main class="pc-doc-page">
+		<section class="pc-doc-container pc-doc-hero" aria-labelledby="about-title">
+			<p class="pc-label">About us</p>
+			<h1 id="about-title">A focused online photo collage maker</h1>
+			<p>
+				Photo Collage Maker helps people create clean collage designs directly in the browser, from Instagram collage stories and posts to simple memory pages, mood boards, and printable image layouts.
+			</p>
+		</section>
+
+		<section class="pc-doc-container pc-doc-grid" aria-label="About Photo Collage Maker">
+			<div class="pc-doc-body">
+				<h2>Why we built it</h2>
+				<p>
+					Collage tools are often buried inside large design suites. We wanted a faster path: open the editor, choose a template, upload photos, adjust the layout, and download a finished image. The product is intentionally focused on collage creation so the workflow stays light and easy to understand.
+				</p>
+				<h2>What you can create</h2>
+				<p>
+					The editor supports Instagram collage story designs, Instagram collage post layouts, family collages, birthday recaps, travel boards, product highlights, and other photo-first visuals. You can use frames, text, stickers, backgrounds, and export options to make a collage that fits your use case.
+				</p>
+				<h2>Our approach</h2>
+				<p>
+					We keep the interface practical: templates on one side, the editable canvas in the center, and object controls nearby. The goal is to make collage editing feel approachable on desktop and mobile without unnecessary steps.
+				</p>
+			</div>
+
+			<aside class="pc-doc-panel">
+				<h2>Quick facts</h2>
+				<ul>
+					<li>Browser-based photo collage editor.</li>
+					<li>Templates for Instagram, social posts, and personal designs.</li>
+					<li>No account required to start editing.</li>
+					<li>PNG and JPG export support.</li>
+				</ul>
+			</aside>
+		</section>
+	</main>
+
+	<footer class="pc-site-footer" aria-label="Website links">
+		<div class="pc-site-footer-inner">
+			<a href="/" class="pc-site-footer-brand" aria-label="Photo Collage home">
+				<img src="/Icons/favicon.svg" alt="" width="28" height="28" loading="lazy" decoding="async" />
+				<span>Photo Collage</span>
+			</a>
+			<nav class="pc-site-footer-links" aria-label="Footer">
+				<a href="/contact-us/">Contact us</a>
+				<a href="/privacy-policy/">Privacy policy</a>
+				<a href="/terms-and-conditions/">Terms & conditions</a>
+			</nav>
+		</div>
+	</footer>
+</Layout>

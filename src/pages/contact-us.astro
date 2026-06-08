@@ -1,0 +1,75 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const canonical = 'https://photocollagemake.com/contact-us/';
+---
+
+<Layout
+	title="Contact Us | Photo Collage Maker"
+	description="Contact Photo Collage Maker for support, feedback, bug reports, partnership questions, and requests about the online photo collage editor."
+	canonical={canonical}
+>
+	<header class="pc-site-header">
+		<a href="/" class="pc-site-header-brand" aria-label="Photo Collage home">
+			<img src="/Icons/favicon.svg" alt="" width="30" height="30" loading="eager" decoding="async" />
+			<span>Photo Collage</span>
+		</a>
+		<nav class="pc-site-header-links" aria-label="Website">
+			<a href="/">Editor</a>
+			<a href="/about-us/">About</a>
+			<a href="/privacy-policy/">Privacy</a>
+			<a href="/terms-and-conditions/">Terms</a>
+		</nav>
+	</header>
+
+	<main class="pc-doc-page">
+		<section class="pc-doc-container pc-doc-hero" aria-labelledby="contact-title">
+			<p class="pc-label">Contact us</p>
+			<h1 id="contact-title">Get in touch with Photo Collage Maker</h1>
+			<p>
+				Send questions, bug reports, feature ideas, or partnership notes about the collage editor. We read feedback carefully because it helps us make the tool clearer and more useful.
+			</p>
+		</section>
+
+		<section class="pc-doc-container pc-doc-grid" aria-label="Contact options">
+			<div class="pc-doc-body">
+				<h2>Email</h2>
+				<p>
+					For general support, contact us at <a href="mailto:support@photocollagemake.com">support@photocollagemake.com</a>. Include the device, browser, and export format if you are reporting an editing or download issue.
+				</p>
+				<h2>Helpful details to include</h2>
+				<p>
+					If something is not working as expected, share what you were trying to make, which template or canvas size you used, and whether the issue happened while uploading photos, editing layers, saving, or downloading.
+				</p>
+				<h2>Response time</h2>
+				<p>
+					We aim to review messages as soon as possible. Some requests may take longer if they require investigation, reproduction, or product planning.
+				</p>
+			</div>
+
+			<aside class="pc-doc-panel">
+				<h2>Contact reasons</h2>
+				<ul>
+					<li>Report a bug or broken page.</li>
+					<li>Suggest collage templates or features.</li>
+					<li>Ask about privacy or terms.</li>
+					<li>Send product feedback.</li>
+				</ul>
+			</aside>
+		</section>
+	</main>
+
+	<footer class="pc-site-footer" aria-label="Website links">
+		<div class="pc-site-footer-inner">
+			<a href="/" class="pc-site-footer-brand" aria-label="Photo Collage home">
+				<img src="/Icons/favicon.svg" alt="" width="28" height="28" loading="lazy" decoding="async" />
+				<span>Photo Collage</span>
+			</a>
+			<nav class="pc-site-footer-links" aria-label="Footer">
+				<a href="/about-us/">About us</a>
+				<a href="/privacy-policy/">Privacy policy</a>
+				<a href="/terms-and-conditions/">Terms & conditions</a>
+			</nav>
+		</div>
+	</footer>
+</Layout>

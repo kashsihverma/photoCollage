@@ -1,0 +1,54 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const canonical = 'https://photocollagemake.com/404';
+---
+
+<Layout
+	title="404 Page Not Found | Photo Collage Maker"
+	description="The page you were looking for could not be found. Return to the Photo Collage Maker editor or visit helpful site pages."
+	canonical={canonical}
+	robots="noindex, follow"
+>
+	<header class="pc-site-header">
+		<a href="/" class="pc-site-header-brand" aria-label="Photo Collage home">
+			<img src="/Icons/favicon.svg" alt="" width="30" height="30" loading="eager" decoding="async" />
+			<span>Photo Collage</span>
+		</a>
+		<nav class="pc-site-header-links" aria-label="Website">
+			<a href="/">Editor</a>
+			<a href="/about-us/">About</a>
+			<a href="/contact-us/">Contact</a>
+			<a href="/privacy-policy/">Privacy</a>
+		</nav>
+	</header>
+
+	<main class="pc-doc-page pc-error-page">
+		<section class="pc-doc-container pc-error-panel" aria-labelledby="not-found-title">
+			<p class="pc-error-code">404</p>
+			<h1 id="not-found-title">Page not found</h1>
+			<p>
+				This page may have moved, been removed, or the URL may be typed incorrectly. You can return to the collage editor and keep creating Instagram collage stories, posts, and photo collage designs.
+			</p>
+			<div class="pc-error-actions">
+				<a class="pc-button pc-button-primary" href="/">Open editor</a>
+				<a class="pc-button pc-button-secondary" href="/contact-us/">Contact support</a>
+			</div>
+		</section>
+	</main>
+
+	<footer class="pc-site-footer" aria-label="Website links">
+		<div class="pc-site-footer-inner">
+			<a href="/" class="pc-site-footer-brand" aria-label="Photo Collage home">
+				<img src="/Icons/favicon.svg" alt="" width="28" height="28" loading="lazy" decoding="async" />
+				<span>Photo Collage</span>
+			</a>
+			<nav class="pc-site-footer-links" aria-label="Footer">
+				<a href="/about-us/">About us</a>
+				<a href="/contact-us/">Contact us</a>
+				<a href="/privacy-policy/">Privacy policy</a>
+				<a href="/terms-and-conditions/">Terms & conditions</a>
+			</nav>
+		</div>
+	</footer>
+</Layout>

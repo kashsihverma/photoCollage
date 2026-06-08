@@ -1,0 +1,85 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const canonical = 'https://photocollagemake.com/privacy-policy/';
+---
+
+<Layout
+	title="Privacy Policy | Photo Collage Maker"
+	description="Read the Photo Collage Maker privacy policy, including how browser-based collage editing, local files, analytics, and contact messages are handled."
+	canonical={canonical}
+>
+	<header class="pc-site-header">
+		<a href="/" class="pc-site-header-brand" aria-label="Photo Collage home">
+			<img src="/Icons/favicon.svg" alt="" width="30" height="30" loading="eager" decoding="async" />
+			<span>Photo Collage</span>
+		</a>
+		<nav class="pc-site-header-links" aria-label="Website">
+			<a href="/">Editor</a>
+			<a href="/about-us/">About</a>
+			<a href="/contact-us/">Contact</a>
+			<a href="/terms-and-conditions/">Terms</a>
+		</nav>
+	</header>
+
+	<main class="pc-doc-page">
+		<section class="pc-doc-container pc-doc-hero" aria-labelledby="privacy-title">
+			<p class="pc-label">Privacy policy</p>
+			<h1 id="privacy-title">Privacy Policy</h1>
+			<p>Last updated: June 8, 2026</p>
+		</section>
+
+		<section class="pc-doc-container pc-doc-grid" aria-label="Privacy policy details">
+			<div class="pc-doc-body">
+				<h2>Overview</h2>
+				<p>
+					Photo Collage Maker is designed as a browser-based collage editor. In normal use, the photos you choose are loaded into your browser so you can arrange, edit, and export a collage.
+				</p>
+				<h2>Photos and design files</h2>
+				<p>
+					Photos selected in the editor are used to render your collage in your current browser session. We do not require an account to start editing. If you use save features, design information may be stored in your browser storage so you can continue working locally.
+				</p>
+				<h2>Information you send us</h2>
+				<p>
+					If you contact us by email, we may receive your email address, message, and any details you choose to include. We use this information to respond to support requests, feedback, and product questions.
+				</p>
+				<h2>Analytics and technical data</h2>
+				<p>
+					We may use basic analytics or server logs to understand page performance, errors, browser types, approximate region, and usage patterns. This helps improve reliability and usability.
+				</p>
+				<h2>Cookies and local storage</h2>
+				<p>
+					The site may use browser storage for preferences such as theme selection or saved editor state. You can clear browser storage through your browser settings.
+				</p>
+				<h2>Contact</h2>
+				<p>
+					For privacy questions, contact <a href="mailto:support@photocollagemake.com">support@photocollagemake.com</a>.
+				</p>
+			</div>
+
+			<aside class="pc-doc-panel">
+				<h2>Privacy highlights</h2>
+				<ul>
+					<li>No account required to use the editor.</li>
+					<li>Photos are edited in the browser during normal use.</li>
+					<li>Saved design state may use browser storage.</li>
+					<li>You can contact us for privacy questions.</li>
+				</ul>
+			</aside>
+		</section>
+	</main>
+
+	<footer class="pc-site-footer" aria-label="Website links">
+		<div class="pc-site-footer-inner">
+			<a href="/" class="pc-site-footer-brand" aria-label="Photo Collage home">
+				<img src="/Icons/favicon.svg" alt="" width="28" height="28" loading="lazy" decoding="async" />
+				<span>Photo Collage</span>
+			</a>
+			<nav class="pc-site-footer-links" aria-label="Footer">
+				<a href="/about-us/">About us</a>
+				<a href="/contact-us/">Contact us</a>
+				<a href="/terms-and-conditions/">Terms & conditions</a>
+			</nav>
+		</div>
+	</footer>
+</Layout>

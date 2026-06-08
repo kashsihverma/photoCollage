@@ -18,11 +18,132 @@ import textIcon from 'lucide-static/icons/type.svg?raw';
 import trashIcon from 'lucide-static/icons/trash-2.svg?raw';
 import undoIcon from 'lucide-static/icons/undo-2.svg?raw';
 import uploadIcon from 'lucide-static/icons/upload.svg?raw';
+
+const pageTitle = 'Instagram Collage Maker Free Online | Story & Post Collages';
+const pageDescription =
+	'Create an Instagram collage story or Instagram collage post online with this free Instagram collage maker, using templates, frames, text, and downloads.';
+const canonical = 'https://photocollagemake.com/';
+const seoKeywords = [
+	'instagram collage',
+	'instagram collage maker',
+	'instagram collage story',
+	'instagram collage post',
+	'photo collage',
+	'best photo collage apps',
+	'photo collage maker',
+	'photo collage app',
+	'how to make a photo collage on iphone',
+	'canvas photo collage',
+	'photo collage canvas',
+	'photo collage online free',
+	'free photo collage app',
+	'how to make a photo collage',
+	'photo collage frame',
+	'free photo collage',
+	'photo collage template',
+	'photo collage ideas',
+	'free photo collage maker',
+	'canva photo collage',
+	'create photo collage',
+	'photo collage maker free',
+	'photo collage on canvas',
+	'free online photo collage maker',
+	'online photo collage maker',
+	'online photo collage',
+	'free online photo collage',
+].join(', ');
+const faqItems = [
+	{
+		question: 'How to make a collage on Instagram story?',
+		answer:
+			'Open the editor, choose a vertical Instagram story size, upload your photos, and pick a collage template. Replace the placeholder images, adjust frames and text, then download the finished story image and upload it to Instagram.',
+	},
+	{
+		question: 'How to make a collage on Instagram?',
+		answer:
+			'Start with an Instagram-friendly canvas, add your photos, and arrange them with a template or custom layout. You can use frames, stickers, captions, and backgrounds before exporting the collage as a PNG or JPG for Instagram.',
+	},
+	{
+		question: 'How to make a photo collage on iPhone?',
+		answer:
+			'On iPhone, open this website in Safari, upload images from Photos, choose a collage template, and edit the layout directly in the browser. When the design is ready, tap Download and save the image to your device.',
+	},
+	{
+		question: 'How to make a photo collage?',
+		answer:
+			'To make a photo collage, upload multiple images, choose a layout, place the best photo as the focus, and arrange supporting photos around it. Add text, adjust spacing, and export the final collage for sharing or printing.',
+	},
+	{
+		question: 'How to make a collage on Facebook cover photo?',
+		answer:
+			'Create a wide collage layout, place important faces and text near the center, and avoid putting key details at the edges. Export the design, then upload it as your Facebook cover photo and preview it on desktop and mobile.',
+	},
+	{
+		question: 'How to make a photo collage on Android?',
+		answer:
+			'On Android, open the site in Chrome, upload photos from your gallery, select a template, and edit the collage in the browser. Download the final image when you are ready to share it on Instagram, Facebook, or messaging apps.',
+	},
+	{
+		question: 'What is a photo collage?',
+		answer:
+			'A photo collage is a single design made from multiple photos arranged together. It can use frames, grids, overlapping layers, text, stickers, and backgrounds to tell a story or present a group of images in one shareable file.',
+	},
+];
+const seoJsonLd = {
+	'@context': 'https://schema.org',
+	'@graph': [
+		{
+			'@type': 'WebApplication',
+			name: 'Photo Collage Maker',
+			url: canonical,
+			applicationCategory: 'MultimediaApplication',
+			operatingSystem: 'Web',
+			isAccessibleForFree: true,
+			description: pageDescription,
+			offers: {
+				'@type': 'Offer',
+				price: '0',
+				priceCurrency: 'USD',
+			},
+			featureList: [
+				'Instagram collage maker',
+				'Instagram collage story templates',
+				'Instagram collage post templates',
+				'Free online photo collage maker',
+				'Photo collage templates and frames',
+				'Canvas photo collage layouts',
+				'PNG and JPG export',
+				'Browser-based photo collage app',
+			],
+			publisher: {
+				'@type': 'Organization',
+				name: 'PhotoCollageMake.com',
+				url: canonical,
+			},
+		},
+		{
+			'@type': 'FAQPage',
+			mainEntity: faqItems.map((item) => ({
+				'@type': 'Question',
+				name: item.question,
+				acceptedAnswer: {
+					'@type': 'Answer',
+					text: item.answer,
+				},
+			})),
+		},
+	],
+};
 ---
 
 <Layout
-	title="Photo Collage Maker | Premium collage editor"
-	description="Create premium photo collages with templates, photos, text, stickers, frames, backgrounds, and high-resolution PNG or JPG export."
+	title={pageTitle}
+	description={pageDescription}
+	canonical={canonical}
+	keywords={seoKeywords}
+	image="/Icons/web-app-manifest-512x512.png"
+	imageAlt="Photo Collage Maker official app icon"
+	jsonLd={seoJsonLd}
 >
 	<header class="pc-topbar">
 		<a href="/" class="pc-brand" aria-label="Photo Collage home">
@@ -64,7 +185,8 @@ import uploadIcon from 'lucide-static/icons/upload.svg?raw';
 		</div>
 	</header>
 
-	<main id="studio" class="pc-editor-app">
+	<main class="pc-page-main">
+	<section id="studio" class="pc-editor-app" aria-label="Photo collage editor">
 		<aside class="pc-sidebar" aria-label="Editor panels">
 			<nav class="pc-panel-tabs" aria-label="Tools">
 				<button class="pc-panel-tab" type="button" data-panel="templates" aria-pressed="true" title="Templates">
@@ -103,7 +225,7 @@ import uploadIcon from 'lucide-static/icons/upload.svg?raw';
 					<div class="pc-panel-heading">
 						<div>
 							<p class="pc-label">Gallery</p>
-							<h1 id="templates-title">Templates</h1>
+							<h2 id="templates-title">Templates</h2>
 						</div>
 					</div>
 					<div id="category-list" class="pc-category-list" aria-label="Template categories"></div>
@@ -261,6 +383,87 @@ import uploadIcon from 'lucide-static/icons/upload.svg?raw';
 			</div>
 			<div id="inspector-panel" class="pc-inspector-panel"></div>
 		</aside>
+	</section>
+
+	<section class="pc-seo-section" aria-labelledby="seo-title">
+		<article class="pc-seo-content">
+			<div class="pc-seo-heading">
+				<p class="pc-label">Free online editor</p>
+				<h1 id="seo-title">Instagram Collage Maker for Story and Post Designs</h1>
+				<p class="pc-seo-lede">
+					Create an Instagram collage in the browser with polished templates, flexible story and post canvas sizes, photo frames, text, stickers, and instant PNG or JPG download.
+				</p>
+			</div>
+
+			<div class="pc-seo-grid">
+				<div class="pc-seo-copy">
+					<p>
+						An Instagram collage should be fast to make, easy to adjust, and sharp enough to post without extra cleanup. This Instagram collage maker opens directly into the editor, so you can upload photos, choose a layout, adjust the canvas, and download a finished image without setting up a full design project. It is built for creators, small businesses, students, families, and anyone who wants to turn several photos into one polished Instagram collage. The workspace keeps the core tools close: templates on the left, the editable canvas in the center, and object controls on the right.
+					</p>
+					<p>
+						Use the tool when you need an Instagram collage story for a birthday recap, travel diary, product launch, outfit board, client mood board, or day-in-the-life update. Story layouts need a vertical canvas, clear spacing, and text that stays readable on a phone. The editor includes vertical sizes, drag-and-drop photo frames, background options, stickers, and typography presets so you can build an Instagram collage story that feels organized rather than crowded. Upload your images, pick a template, replace the placeholders, and move each layer until the story frame looks balanced.
+					</p>
+					<p>
+						For feed content, start with an Instagram collage post size and keep the composition simple. An Instagram collage post often works best when one image is the hero and the supporting photos add context around it. You can create product before-and-after posts, event highlights, portfolio samples, family memories, wedding previews, restaurant menus, or carousel cover images. The editor supports square and portrait-friendly sizes, so you can create a clean Instagram collage post and export it as a PNG or JPG for publishing.
+					</p>
+					<p>
+						A useful collage tool should give you more control than a basic camera roll grid while staying lighter than a full design suite. This free online editor lets you resize frames, change backgrounds, add text, duplicate objects, remove layers, and save your design in the browser. You can use photo collage templates as a starting point, then customize the images, captions, colors, and decorative elements for your own Instagram style. The goal is not to copy a social media template exactly; it is to help you create a layout that feels personal and ready to share.
+					</p>
+					<p>
+						If you are making content on iPhone, open the site in Safari, upload images from Photos, choose an Instagram collage story or post template, and tap Download when the design is finished. On desktop, you get more room for detailed edits, layer selection, and text adjustments. Both workflows are useful: mobile is quick for casual stories, while desktop is comfortable for brand posts, campaign visuals, and larger batches of images. Because the editor runs online, it can work as a focused Instagram collage app without requiring an app store install.
+					</p>
+					<p>
+						The best Instagram collage designs usually follow a few simple rules. Start with the strongest photo, keep supporting images visually related, leave breathing room between frames, and use short captions instead of long paragraphs. Match the background to the feeling of the post: soft colors for memories, clean white space for portfolios, bold accents for launches, and playful stickers for celebrations. The editor gives you room to test several Instagram collage ideas quickly, including tight grids, layered scrapbook looks, clean editorial layouts, and story-ready vertical designs.
+					</p>
+					<p>
+						This tool is also helpful when you want a photo collage for Instagram but do not want a broad platform with too many unrelated options. It focuses on collage creation, export quality, and a clean workflow. You can make an Instagram collage maker free project for a story, post, announcement, highlight cover, or quick memory page, then download the final image and publish it wherever you manage your social content. The result is a practical, lightweight way to create Instagram collage visuals online.
+					</p>
+				</div>
+
+				<aside class="pc-seo-aside" aria-label="Instagram collage use cases">
+					<h2>Popular Instagram collage uses</h2>
+					<ul>
+						<li>Create an Instagram collage story for travel, birthdays, launches, and daily recaps.</li>
+						<li>Design an Instagram collage post for feeds, portfolios, products, and event highlights.</li>
+						<li>Use templates, frames, stickers, captions, and custom backgrounds in one browser editor.</li>
+						<li>Export a high-resolution PNG or JPG for Instagram, social media, or client review.</li>
+					</ul>
+				</aside>
+			</div>
+
+			<section class="pc-faq" aria-labelledby="faq-title">
+				<div class="pc-faq-heading">
+					<p class="pc-label">FAQ</p>
+					<h2 id="faq-title">Photo Collage Questions</h2>
+					<p>Quick answers for making Instagram collages, iPhone collages, Android collages, Facebook cover collages, and general photo collage designs.</p>
+				</div>
+
+				<div class="pc-faq-list">
+					{faqItems.map((item) => (
+						<details class="pc-faq-item">
+							<summary>{item.question}</summary>
+							<p>{item.answer}</p>
+						</details>
+					))}
+				</div>
+			</section>
+		</article>
+	</section>
+
+	<footer class="pc-site-footer" aria-label="Website links">
+		<div class="pc-site-footer-inner">
+			<a href="/" class="pc-site-footer-brand" aria-label="Photo Collage home">
+				<img src="/Icons/favicon.svg" alt="" width="28" height="28" loading="lazy" decoding="async" />
+				<span>Photo Collage</span>
+			</a>
+			<nav class="pc-site-footer-links" aria-label="Footer">
+				<a href="/about-us/">About us</a>
+				<a href="/contact-us/">Contact us</a>
+				<a href="/privacy-policy/">Privacy policy</a>
+				<a href="/terms-and-conditions/">Terms & conditions</a>
+			</nav>
+		</div>
+	</footer>
 	</main>
 </Layout>
 

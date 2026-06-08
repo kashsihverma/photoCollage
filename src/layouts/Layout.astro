@@ -2,14 +2,33 @@
 import '../styles/global.css';
 
 interface Props {
+	canonical?: string;
 	title?: string;
 	description?: string;
+	image?: string;
+	imageAlt?: string;
+	imageHeight?: number;
+	imageWidth?: number;
+	jsonLd?: Record<string, unknown>;
+	keywords?: string;
+	robots?: string;
 }
 
 const {
+	canonical = 'https://photocollagemake.com/',
 	title = 'Photo Collage Maker | photocollagemake.com',
 	description = 'Create and download clean photo collages from multiple uploaded images.',
+	image = '/Icons/web-app-manifest-512x512.png',
+	imageAlt = 'Photo Collage Maker app icon',
+	imageHeight = 512,
+	imageWidth = 512,
+	jsonLd,
+	keywords,
+	robots = 'index, follow, max-image-preview:large',
 } = Astro.props;
+
+const siteUrl = 'https://photocollagemake.com';
+const absoluteImage = image.startsWith('http') ? image : new URL(image, siteUrl).toString();
 ---
 
 <!doctype html>
@@ -18,6 +37,9 @@ const {
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="description" content={description} />
+		{keywords && <meta name="keywords" content={keywords} />}
+		<meta name="robots" content={robots} />
+		<meta name="application-name" content="Photo Collage Maker" />
 		<meta name="theme-color" content="#fafafa" />
 		<script is:inline>
 			(() => {
@@ -32,7 +54,7 @@ const {
 				}
 			})();
 		</script>
-		<link rel="canonical" href="https://photocollagemake.com/" />
+		<link rel="canonical" href={canonical} />
 		<link rel="icon" type="image/png" href="/Icons/favicon-96x96.png" sizes="96x96" />
 		<link rel="icon" type="image/svg+xml" href="/Icons/favicon.svg" />
 		<link rel="shortcut icon" href="/Icons/favicon.ico" />
@@ -40,10 +62,23 @@ const {
 		<meta name="apple-mobile-web-app-title" content="Collage" />
 		<link rel="manifest" href="/Icons/site.webmanifest" />
 		<meta property="og:type" content="website" />
-		<meta property="og:url" content="https://photocollagemake.com/" />
+		<meta property="og:site_name" content="Photo Collage Maker" />
+		<meta property="og:locale" content="en_US" />
+		<meta property="og:url" content={canonical} />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
+		<meta property="og:image" content={absoluteImage} />
+		<meta property="og:image:secure_url" content={absoluteImage} />
+		<meta property="og:image:type" content="image/png" />
+		<meta property="og:image:width" content={String(imageWidth)} />
+		<meta property="og:image:height" content={String(imageHeight)} />
+		<meta property="og:image:alt" content={imageAlt} />
 		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={absoluteImage} />
+		<meta name="twitter:image:alt" content={imageAlt} />
+		{jsonLd && <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
 		<title>{title}</title>
 	</head>
 	<body>
