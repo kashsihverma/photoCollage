@@ -76,6 +76,8 @@ const THEME_STORAGE_KEY = 'photo-collage-theme';
 
 const initialTemplate = templates[0];
 let activeLiveEditKey: string | null = null;
+let canvasResizeAnimationFrame = 0;
+let pointerAnimationFrame = 0;
 
 const state: StudioState = {
 	activeCategory: 'All',
@@ -899,6 +901,10 @@ function updateBackgroundTone(value: number): void {
 }
 
 function renderCanvas(): void {
+	if (canvasResizeAnimationFrame) {
+		window.cancelAnimationFrame(canvasResizeAnimationFrame);
+		canvasResizeAnimationFrame = 0;
+	}
 	const size = getSize(state.sizeId);
 	const background = getBackground(state.backgroundId);
 	const backgroundPhoto = getBackgroundPhoto();
@@ -958,6 +964,14 @@ function renderCanvas(): void {
 
 	el.activeTemplateLabel.textContent = getTemplate(state.templateId).name;
 	el.activeSizeLabel.textContent = getSize(state.sizeId).name;
+}
+
+function scheduleCanvasResize(): void {
+	if (canvasResizeAnimationFrame) return;
+	canvasResizeAnimationFrame = window.requestAnimationFrame(() => {
+		canvasResizeAnimationFrame = 0;
+		renderCanvas();
+	});
 }
 
 function sizeCanvasToStage(aspectRatio: number): void {
@@ -1089,6 +1103,28 @@ function setLayerBox(element: HTMLElement, x: number, y: number, w: number, h: n
 	element.style.width = `${w}%`;
 	element.style.height = `${h}%`;
 	element.style.transform = `rotate(${rotation}deg)`;
+}
+
+function findLayerNode(layerId: string): HTMLElement | null {
+	return el.preview.querySelector<HTMLElement>(`.pc-layer[data-layer-id="${layerId}"]`);
+}
+
+function applyLayerBoxToDom(layer: DesignLayer): void {
+	const node = findLayerNode(layer.id);
+	if (!node) return;
+	setLayerBox(node, layer.x, layer.y, layer.w, layer.h, layer.rotation);
+}
+
+function schedulePointerDomUpdate(): void {
+	if (pointerAnimationFrame) return;
+	pointerAnimationFrame = window.requestAnimationFrame(() => {
+		pointerAnimationFrame = 0;
+		const pointer = state.pointer;
+		if (!pointer) return;
+		const nextLayer = state.layers.find((item) => item.id === pointer.id);
+		if (!nextLayer) return;
+		applyLayerBoxToDom(nextLayer);
+	});
 }
 
 function renderInspector(): void {
@@ -1527,6 +1563,7 @@ function startPointer(event: PointerEvent, id: string, mode: PointerSession['mod
 function updatePointer(event: PointerEvent): void {
 	const pointer = state.pointer;
 	if (!pointer) return;
+	event.preventDefault();
 
 	const layer = state.layers.find((item) => item.id === pointer.id);
 	if (!layer) return;
@@ -1545,14 +1582,21 @@ function updatePointer(event: PointerEvent): void {
 		layer.h = clamp(pointer.startLayer.h + dy, 4, 100);
 	}
 
-	renderCanvas();
+	schedulePointerDomUpdate();
 }
 
 function finishPointer(): void {
 	if (!state.pointer) return;
+	if (pointerAnimationFrame) {
+		window.cancelAnimationFrame(pointerAnimationFrame);
+		pointerAnimationFrame = 0;
+	}
+	const layer = state.layers.find((item) => item.id === state.pointer?.id);
 	state.pointer = null;
+	if (layer) applyLayerBoxToDom(layer);
 	hideGuides();
 	renderInspector();
+	if (state.activePanel === 'layers') renderLayers();
 	markDirty('Object updated.');
 }
 
@@ -1857,7 +1901,8 @@ function setupEvents(): void {
 
 	window.addEventListener('pointermove', updatePointer);
 	window.addEventListener('pointerup', finishPointer);
-	window.addEventListener('resize', renderCanvas);
+	window.addEventListener('pointercancel', finishPointer);
+	window.addEventListener('resize', scheduleCanvasResize);
 	document.addEventListener('paste', (event) => {
 		const files = Array.from(event.clipboardData?.items ?? [])
 			.filter((item) => item.kind === 'file')

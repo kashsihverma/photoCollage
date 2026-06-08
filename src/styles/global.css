@@ -1309,6 +1309,7 @@ img {
 		min-height: 0;
 		place-items: center;
 		overflow: auto;
+		overscroll-behavior: contain;
 		border: 1px solid var(--color-hairline);
 		border-radius: var(--radius-vercel-lg);
 		background:
@@ -1332,6 +1333,7 @@ img {
 		border-radius: 10px;
 		box-shadow: var(--shadow-editor);
 		background-size: cover;
+		contain: layout paint style;
 	}
 
 	.pc-design-surface::before {
@@ -1356,6 +1358,7 @@ img {
 	.pc-layer {
 		position: absolute;
 		z-index: 1;
+		contain: layout paint;
 		touch-action: none;
 		user-select: none;
 		transition: box-shadow 120ms ease;
@@ -1365,6 +1368,7 @@ img {
 		outline: 2px solid var(--color-link);
 		outline-offset: 2px;
 		z-index: 20;
+		will-change: left, top, width, height, transform;
 	}
 
 	.pc-layer.is-drop-target {
@@ -1485,7 +1489,9 @@ img {
 		border: 2px solid var(--color-link);
 		border-radius: 999px;
 		background: var(--color-canvas);
+		cursor: nwse-resize;
 		padding: 0;
+		touch-action: none;
 	}
 
 	.pc-guide {
@@ -1875,7 +1881,7 @@ img {
 	}
 
 	.pc-panel-browser {
-		max-height: min(46svh, 430px);
+		max-height: min(38svh, 360px);
 		padding: 16px;
 	}
 
@@ -1902,7 +1908,7 @@ img {
 	}
 
 	.pc-workspace {
-		min-height: 70svh;
+		min-height: 76svh;
 		padding: 14px;
 	}
 
@@ -1916,7 +1922,7 @@ img {
 	}
 
 	.pc-stage {
-		min-height: 54svh;
+		min-height: 58svh;
 		padding: 14px;
 	}
 
@@ -2016,7 +2022,7 @@ img {
 	}
 
 	.pc-panel-browser {
-		max-height: 44svh;
+		max-height: 34svh;
 		padding: 14px 12px;
 	}
 
@@ -2055,7 +2061,7 @@ img {
 	}
 
 	.pc-workspace {
-		min-height: 70svh;
+		min-height: 78svh;
 		padding: 12px;
 	}
 
@@ -2070,7 +2076,7 @@ img {
 	}
 
 	.pc-stage {
-		min-height: 50svh;
+		min-height: 56svh;
 		padding: 10px;
 	}
 
