@@ -1,4 +1,4 @@
-import type { BackgroundPreset, ExportFormat, FrameStyle, ImageFit, SizePreset, TextAlign } from './templates';
+import type { BackgroundPreset, ExportFormat, FrameStyle, ImageFit, PhotoFilter, SizePreset, TextAlign } from './templates';
 
 export interface DrawablePhoto {
 	id: string;
@@ -19,6 +19,7 @@ export interface PhotoLayer extends BaseLayer {
 	photoId: string | null;
 	frame: FrameStyle;
 	fit: ImageFit;
+	filter: PhotoFilter;
 	cropX: number;
 	cropY: number;
 	scale: number;
@@ -83,7 +84,7 @@ export async function renderDesignToCanvas(canvas: HTMLCanvasElement, design: Ex
 			drawTextLayer(context, layer, canvas.width, canvas.height);
 		}
 		if (layer.kind === 'sticker') {
-			drawStickerLayer(context, layer, canvas.width, canvas.height);
+			await drawStickerLayer(context, layer, canvas.width, canvas.height);
 		}
 	}
 }
@@ -138,6 +139,7 @@ function gradientStops(id: string): [string, string] {
 		butter: ['#fff8d8', '#ffe3b3'],
 		aurora: ['#ccfbf1', '#a78bfa'],
 		candy: ['#fed7e2', '#bfdbfe'],
+		'editorial-blush': ['#fff7ed', '#e0f2fe'],
 		forest: ['#ecfccb', '#134e4a'],
 		graphite: ['#18181b', '#52525b'],
 		'crumpled-paper': ['#f4f4f2', '#d9d9d6'],
@@ -364,7 +366,9 @@ async function drawPhotoLayer(
 			context.save();
 			roundedRect(context, imageRect.x, imageRect.y, imageRect.w, imageRect.h, radius);
 			context.clip();
+			context.filter = canvasPhotoFilter(layer.filter);
 			drawImageFit(context, photo.image, imageRect, layer.fit, layer.cropX, layer.cropY, layer.scale);
+			context.filter = 'none';
 			context.restore();
 		}
 	} else {
@@ -385,6 +389,19 @@ async function drawPhotoLayer(
 	context.restore();
 }
 
+function canvasPhotoFilter(filter: PhotoFilter): string {
+	const map: Record<PhotoFilter, string> = {
+		cool: 'saturate(0.92) contrast(1.04) brightness(1.03) sepia(0.08) hue-rotate(178deg)',
+		matte: 'saturate(0.78) contrast(0.92) brightness(1.08) sepia(0.1)',
+		mono: 'grayscale(1) contrast(1.08) brightness(1.02)',
+		none: 'none',
+		vivid: 'saturate(1.26) contrast(1.08) brightness(1.02)',
+		warm: 'saturate(1.04) contrast(1.03) brightness(1.03) sepia(0.16)',
+	};
+
+	return map[filter] ?? 'none';
+}
+
 function drawTextLayer(context: CanvasRenderingContext2D, layer: TextLayer, canvasWidth: number, canvasHeight: number): void {
 	const rect = toPixelRect(layer, canvasWidth, canvasHeight);
 	const fontSize = Math.max(10, (layer.fontSize / 100) * canvasWidth);
@@ -402,13 +419,18 @@ function drawTextLayer(context: CanvasRenderingContext2D, layer: TextLayer, canv
 	context.restore();
 }
 
-function drawStickerLayer(context: CanvasRenderingContext2D, layer: StickerLayer, canvasWidth: number, canvasHeight: number): void {
+async function drawStickerLayer(context: CanvasRenderingContext2D, layer: StickerLayer, canvasWidth: number, canvasHeight: number): Promise<void> {
 	const rect = toPixelRect(layer, canvasWidth, canvasHeight);
 	const fontSize = Math.max(12, Math.min(rect.w, rect.h) * 0.82);
 
 	context.save();
 	context.globalAlpha = layer.opacity;
 	applyLayerTransform(context, rect, layer.rotation);
+	if (isSvgMarkup(layer.content)) {
+		await drawSvgMarkup(context, layer.content, rect.w, rect.h);
+		context.restore();
+		return;
+	}
 	if (layer.background !== 'transparent') {
 		context.fillStyle = layer.background;
 		roundedRect(context, 0, 0, rect.w, rect.h, Math.min(rect.w, rect.h) * 0.18);
@@ -420,6 +442,19 @@ function drawStickerLayer(context: CanvasRenderingContext2D, layer: StickerLayer
 	context.textBaseline = 'middle';
 	context.fillText(layer.content, rect.w / 2, rect.h / 2 + fontSize * 0.03);
 	context.restore();
+}
+
+async function drawSvgMarkup(context: CanvasRenderingContext2D, markup: string, width: number, height: number): Promise<void> {
+	const image = new Image();
+	image.decoding = 'async';
+	image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(markup)}`;
+	await ensureLoaded(image);
+	if (!image.naturalWidth || !image.naturalHeight) return;
+	context.drawImage(image, 0, 0, width, height);
+}
+
+function isSvgMarkup(value: string): boolean {
+	return value.trimStart().startsWith('<svg');
 }
 
 function toPixelRect(layer: BaseLayer, canvasWidth: number, canvasHeight: number): PixelRect {

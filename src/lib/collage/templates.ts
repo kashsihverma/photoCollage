@@ -11,10 +11,11 @@ export type TemplateCategory =
 	| 'Instagram Post'
 	| 'Poster';
 
-export type SizeId = 'square' | 'instagram-post' | 'story' | 'poster' | 'a4' | 'wide';
+export type SizeId = 'square' | 'instagram-post' | 'story' | 'poster' | 'portrait' | 'a4' | 'wide';
 export type ExportFormat = 'png' | 'jpeg';
 export type ImageFit = 'cover' | 'contain';
 export type FrameStyle = 'clean' | 'paper' | 'polaroid' | 'film' | 'stamp' | 'soft' | 'shadow';
+export type PhotoFilter = 'none' | 'warm' | 'cool' | 'mono' | 'matte' | 'vivid';
 export type TextAlign = 'left' | 'center' | 'right';
 
 export interface SizePreset {
@@ -44,6 +45,7 @@ export interface PhotoSlotPreset {
 	radius?: number;
 	frame?: FrameStyle;
 	fit?: ImageFit;
+	filter?: PhotoFilter;
 	cropX?: number;
 	cropY?: number;
 	scale?: number;
@@ -138,6 +140,7 @@ export const sizePresets: Record<SizeId, SizePreset> = {
 	},
 	story: { id: 'story', name: 'Story', label: '1080 x 1920', width: 1080, height: 1920, css: '9 / 16' },
 	poster: { id: 'poster', name: 'Poster', label: '2400 x 3000', width: 2400, height: 3000, css: '4 / 5' },
+	portrait: { id: 'portrait', name: 'Portrait', label: '2000 x 3000', width: 2000, height: 3000, css: '2 / 3' },
 	a4: { id: 'a4', name: 'A4 poster', label: '2480 x 3508', width: 2480, height: 3508, css: '210 / 297' },
 	wide: { id: 'wide', name: 'Wide', label: '1920 x 1080', width: 1920, height: 1080, css: '16 / 9' },
 };
@@ -168,6 +171,17 @@ export const backgrounds: BackgroundPreset[] = [
 	{ id: 'forest', name: 'Forest mist', css: 'linear-gradient(135deg, #ecfccb 0%, #134e4a 100%)', base: '#ecfccb', pattern: 'paper' },
 	{ id: 'graphite', name: 'Graphite grid', css: 'linear-gradient(135deg, #18181b 0%, #52525b 100%)', base: '#18181b', pattern: 'grid' },
 	{ id: 'prism', name: 'Prism paper', css: 'linear-gradient(135deg, #fdf2f8 0%, #fde68a 100%)', base: '#fdf2f8', pattern: 'mesh' },
+	{
+		id: 'editorial-blush',
+		name: 'Editorial blush',
+		css: 'linear-gradient(145deg, #fff7ed 0%, #fce7f3 52%, #e0f2fe 100%)',
+		base: '#fff7ed',
+		pattern: 'paper',
+	},
+	{ id: 'wedding-vellum', name: 'Wedding vellum', css: '#f7f6ef', base: '#f7f6ef', pattern: 'paper' },
+	{ id: 'powder-blue', name: 'Powder blue', css: 'linear-gradient(135deg, #eef6ff 0%, #dbeafe 100%)', base: '#eef6ff', pattern: 'paper' },
+	{ id: 'newsprint', name: 'Newsprint', css: '#f5f1e8', base: '#f5f1e8', pattern: 'paper' },
+	{ id: 'sage-paper', name: 'Sage paper', css: 'linear-gradient(135deg, #f7f7ef 0%, #dde8d5 100%)', base: '#f7f7ef', pattern: 'paper' },
 ];
 
 export const templateImages = [
@@ -183,8 +197,23 @@ export const templateImages = [
 
 const romanticFont = 'Georgia, Times New Roman, serif';
 const handwrittenFont = 'Comic Sans MS, Bradley Hand, cursive';
+const weddingScriptFont = 'Brush Script MT, Snell Roundhand, Apple Chancery, cursive';
 const cleanFont = 'Inter, Arial, sans-serif';
 const monoFont = 'Courier New, monospace';
+
+const weddingLeafSvg = `<svg viewBox="0 0 260 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<g fill="none" stroke="#486654" stroke-linecap="round" stroke-width="5" opacity=".72">
+<path d="M23 197C63 111 122 54 230 24"/>
+<path d="M41 157C29 126 34 103 60 87c23 27 20 52-19 70Z" fill="#66836d"/>
+<path d="M75 121C58 94 59 69 84 48c28 23 30 52-9 73Z" fill="#78937c"/>
+<path d="M112 87c-13-32-6-57 22-74 25 28 19 57-22 74Z" fill="#5f7f68"/>
+<path d="M145 65c11-33 31-49 62-48 3 37-17 55-62 48Z" fill="#78937c"/>
+<path d="M183 45c16-31 40-44 71-37-2 36-27 51-71 37Z" fill="#5f7f68"/>
+<path d="M64 178c31-10 55-4 72 21-30 18-55 11-72-21Z" fill="#78937c"/>
+<path d="M102 138c35-9 60 2 74 29-34 14-58 4-74-29Z" fill="#66836d"/>
+<path d="M142 101c33-12 58-6 76 18-30 19-55 13-76-18Z" fill="#78937c"/>
+</g>
+</svg>`;
 
 const slot = (
 	id: string,
@@ -195,7 +224,8 @@ const slot = (
 	frame: FrameStyle = 'paper',
 	rotation = 0,
 	radius = 2,
-): PhotoSlotPreset => ({ id, x, y, w, h, frame, rotation, radius, fit: 'cover', cropX: 50, cropY: 50, scale: 1 });
+	filter: PhotoFilter = 'none',
+): PhotoSlotPreset => ({ id, x, y, w, h, frame, rotation, radius, fit: 'cover', filter, cropX: 50, cropY: 50, scale: 1 });
 
 const text = (
 	id: string,
@@ -275,6 +305,38 @@ export const templates: CollageTemplate[] = [
 		premium: true,
 	},
 	{
+		id: 'shared-canva-story',
+		name: 'Canva Story Set',
+		category: 'Instagram Story',
+		size: 'story',
+		backgroundId: 'editorial-blush',
+		slots: [
+			slot('p1', 10, 7, 80, 34, 'soft', 0, 5),
+			slot('p2', 9, 45, 40, 24, 'paper', -4, 2),
+			slot('p3', 51, 43, 40, 25, 'paper', 4, 2),
+			slot('p4', 28, 67, 44, 20, 'polaroid', -1, 2),
+		],
+		texts: [
+			text('t1', 'photo story', 12, 88, 76, 5.5, 4.4, '#171717', romanticFont),
+			text('t2', 'edit the title and drop in your favorite moments', 18, 94, 64, 3.5, 2.2, '#57534e', monoFont),
+		],
+		stickers: [
+			sticker('s1', '01', 10, 3, 12, 4, 0, '#171717'),
+			sticker('s2', '✦', 82, 40, 7, 7, 0, '#171717'),
+			sticker('s3', '✧', 15, 70, 7, 7, -12, '#57534e'),
+			sticker('s4', '♡', 76, 71, 8, 8, 8, '#ef476f'),
+			sticker('s5', '▰', 40, 41, 20, 4, -7, '#f7d37a'),
+		],
+		tags: ['canva', 'story', 'editorial', 'soft', 'photo set', 'shared link'],
+		previewImages: [
+			'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80',
+			'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&q=80',
+			'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=600&q=80',
+			'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=600&q=80',
+		],
+		premium: true,
+	},
+	{
 		id: 'birthday-film',
 		name: 'Birthday Film',
 		category: 'Birthday',
@@ -331,6 +393,38 @@ export const templates: CollageTemplate[] = [
 		texts: [text('t1', 'Our Day', 22, 88, 56, 7, 6, '#171717', romanticFont)],
 		stickers: [sticker('s1', '—', 18, 55, 64, 3, 0, '#d4af37')],
 		tags: ['wedding', 'minimal', 'poster'],
+		premium: true,
+	},
+	{
+		id: 'happy-wedding-botanical',
+		name: 'Happy Wedding Botanical',
+		category: 'Wedding',
+		size: 'portrait',
+		backgroundId: 'wedding-vellum',
+		slots: [
+			slot('p1', 4.3, 21.2, 24.7, 49.8, 'clean', 0, 0),
+			slot('p2', 30.2, 21.2, 41.8, 24.3, 'clean', 0, 0),
+			slot('p3', 30.2, 46.4, 41.8, 24.6, 'clean', 0, 0),
+			slot('p4', 73.2, 21.2, 22.6, 49.8, 'clean', 0, 0),
+			slot('p5', 4.3, 72, 91.5, 21.8, 'clean', 0, 0),
+		],
+		texts: [text('t1', '~Happy Wedding~', 16, 9.2, 68, 8.8, 7.8, '#233234', weddingScriptFont)],
+		stickers: [
+			sticker('s1', weddingLeafSvg, -3.2, 7, 30, 11, -12, '#486654'),
+			sticker('s2', weddingLeafSvg, 74.5, 6.8, 28, 11.5, 100, '#486654'),
+			sticker('s3', weddingLeafSvg, -4.5, 20.8, 16, 10, -54, '#486654'),
+			sticker('s4', weddingLeafSvg, 89.3, 21.5, 14.5, 10.5, 122, '#486654'),
+			sticker('s5', weddingLeafSvg, -4.8, 89.6, 22, 10, -94, '#486654'),
+			sticker('s6', weddingLeafSvg, 82.8, 91.2, 18, 8.7, 202, '#486654'),
+		],
+		tags: ['wedding', 'botanical', 'leaf', 'greenery', 'portrait', 'canva'],
+		previewImages: [
+			'https://images.unsplash.com/photo-1546032996-6dfacbacbf3f?auto=format&fit=crop&w=700&q=80',
+			'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=700&q=80',
+			'https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=700&q=80',
+			'https://images.unsplash.com/photo-1523438885200-e635ba2c371e?auto=format&fit=crop&w=700&q=80',
+			'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=900&q=80',
+		],
 		premium: true,
 	},
 	{
@@ -809,6 +903,128 @@ export const templates: CollageTemplate[] = [
 		texts: [text('t1', 'summer set', 13, 81, 74, 5, 4.4, '#0f766e', handwrittenFont)],
 		stickers: [sticker('s1', '✿', 8, 77, 8, 8, -8, '#0f766e'), sticker('s2', '♡', 83, 6, 8, 8, 8, '#0f766e')],
 		tags: ['post', 'summer', 'set'],
+	},
+	{
+		id: 'story-scrapbook-zine',
+		name: 'Scrapbook Zine',
+		category: 'Instagram Story',
+		size: 'story',
+		backgroundId: 'newsprint',
+		slots: [
+			slot('p1', 9, 8, 58, 28, 'paper', -5, 1, 'matte'),
+			slot('p2', 47, 28, 43, 25, 'polaroid', 7, 2, 'warm'),
+			slot('p3', 13, 52, 39, 24, 'paper', -4, 1, 'mono'),
+			slot('p4', 44, 66, 44, 22, 'paper', 5, 1, 'matte'),
+		],
+		texts: [
+			text('t1', 'photo dump', 9, 89, 82, 5.5, 4.2, '#171717', monoFont),
+			text('t2', 'cut, paste, remember', 11, 94, 78, 3.5, 2.3, '#57534e', monoFont),
+		],
+		stickers: [
+			sticker('s1', '▰', 39, 36, 21, 4, -8, '#e7cf8c'),
+			sticker('s2', '▰', 12, 49, 18, 4, 10, '#d8b4fe'),
+			sticker('s3', '✦', 80, 55, 8, 8, 0, '#171717'),
+			sticker('s4', '○', 8, 80, 7, 7, 0, '#171717'),
+		],
+		tags: ['story', 'scrapbook', 'zine', 'paper', 'tape', 'photo dump'],
+		premium: true,
+	},
+	{
+		id: 'post-moodboard-studio',
+		name: 'Moodboard Studio',
+		category: 'Aesthetic',
+		size: 'instagram-post',
+		backgroundId: 'clean',
+		slots: [
+			slot('p1', 6, 8, 49, 34, 'clean', 0, 0, 'matte'),
+			slot('p2', 59, 8, 35, 22, 'paper', 2, 1, 'warm'),
+			slot('p3', 59, 33, 35, 24, 'clean', 0, 0, 'cool'),
+			slot('p4', 6, 47, 26, 27, 'paper', -3, 1, 'mono'),
+			slot('p5', 35, 48, 59, 31, 'clean', 0, 0, 'matte'),
+		],
+		texts: [
+			text('t1', 'MOODBOARD', 6, 82, 44, 4, 3, '#171717', monoFont, 'left'),
+			text('t2', 'visual direction', 6, 87, 44, 4.5, 3.8, '#171717', romanticFont, 'left'),
+		],
+		stickers: [
+			sticker('s1', '01', 84, 83, 10, 4, 0, '#171717'),
+			sticker('s2', '—', 51, 84, 24, 3, 0, '#171717'),
+			sticker('s3', '✧', 30, 42, 7, 7, 0, '#171717'),
+		],
+		tags: ['moodboard', 'figma', 'portfolio', 'aesthetic', 'grid'],
+		premium: true,
+	},
+	{
+		id: 'wedding-cool-blue-editorial',
+		name: 'Cool Blue Wedding',
+		category: 'Wedding',
+		size: 'portrait',
+		backgroundId: 'powder-blue',
+		slots: [
+			slot('p1', 8, 9, 84, 34, 'soft', 0, 3, 'cool'),
+			slot('p2', 8, 48, 40, 28, 'clean', 0, 0, 'matte'),
+			slot('p3', 52, 48, 40, 28, 'clean', 0, 0, 'cool'),
+			slot('p4', 18, 79, 64, 11, 'paper', 0, 1, 'mono'),
+		],
+		texts: [
+			text('t1', 'Something Blue', 11, 43.8, 78, 5, 4.8, '#1e3a5f', romanticFont),
+			text('t2', 'wedding weekend', 12, 92, 76, 4, 2.4, '#4b647f', monoFont),
+		],
+		stickers: [
+			sticker('s1', weddingLeafSvg, -3, 2, 24, 10, -18, '#63809a'),
+			sticker('s2', weddingLeafSvg, 82, 2, 20, 10, 105, '#63809a'),
+			sticker('s3', '✦', 81, 44, 7, 7, 0, '#1e3a5f'),
+		],
+		tags: ['wedding', 'blue', 'editorial', 'portrait', 'trend'],
+		premium: true,
+	},
+	{
+		id: 'story-year-recap-gallery',
+		name: 'Year Recap Gallery',
+		category: 'Instagram Story',
+		size: 'story',
+		backgroundId: 'linen',
+		slots: [
+			slot('p1', 12, 10, 34, 22, 'polaroid', -5, 2, 'warm'),
+			slot('p2', 53, 9, 35, 22, 'polaroid', 5, 2, 'matte'),
+			slot('p3', 15, 35, 70, 24, 'paper', 0, 1, 'vivid'),
+			slot('p4', 12, 63, 34, 22, 'polaroid', 4, 2, 'cool'),
+			slot('p5', 54, 62, 34, 22, 'polaroid', -4, 2, 'warm'),
+		],
+		texts: [
+			text('t1', '2026 recap', 12, 87, 76, 5.5, 4, '#57534e', handwrittenFont),
+			text('t2', 'favorite little moments', 16, 93, 68, 3.5, 2.3, '#78716c', monoFont),
+		],
+		stickers: [
+			sticker('s1', '★', 45, 29, 8, 8, 12, '#f59e0b'),
+			sticker('s2', '♡', 80, 84, 7, 7, -8, '#ef476f'),
+			sticker('s3', '▰', 39, 59, 22, 4, -8, '#e7cf8c'),
+		],
+		tags: ['story', 'recap', 'year', 'polaroid', 'memories'],
+		premium: true,
+	},
+	{
+		id: 'post-clean-commerce-grid',
+		name: 'Clean Product Grid',
+		category: 'Instagram Post',
+		size: 'instagram-post',
+		backgroundId: 'sage-paper',
+		slots: [
+			slot('p1', 7, 8, 86, 39, 'soft', 0, 3, 'vivid'),
+			slot('p2', 7, 51, 27, 25, 'clean', 0, 0, 'matte'),
+			slot('p3', 36.5, 51, 27, 25, 'clean', 0, 0, 'matte'),
+			slot('p4', 66, 51, 27, 25, 'clean', 0, 0, 'matte'),
+		],
+		texts: [
+			text('t1', 'NEW ARRIVALS', 8, 80, 84, 4.5, 3.2, '#24352b', monoFont),
+			text('t2', 'drop your product photos into the grid', 13, 86, 74, 4, 2.4, '#526356', monoFont),
+		],
+		stickers: [
+			sticker('s1', '01', 8, 3.5, 9, 4, 0, '#24352b'),
+			sticker('s2', '✦', 85, 78, 7, 7, 0, '#24352b'),
+		],
+		tags: ['product', 'commerce', 'portfolio', 'clean', 'grid'],
+		premium: true,
 	},
 ];
 

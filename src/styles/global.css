@@ -781,6 +781,14 @@ img {
 		line-height: 1;
 	}
 
+	.pc-template-sticker svg,
+	.pc-layer-sticker svg {
+		display: block;
+		width: 100%;
+		height: 100%;
+		overflow: visible;
+	}
+
 	.pc-crown {
 		right: 8px;
 		bottom: 8px;

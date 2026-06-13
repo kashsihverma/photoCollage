@@ -14,6 +14,7 @@ import {
 	elementPresets,
 	type ExportFormat,
 	type FrameStyle,
+	type PhotoFilter,
 	getBackground,
 	getSize,
 	getTemplate,
@@ -317,6 +318,7 @@ function layersFromTemplate(templateId: string): DesignLayer[] {
 		cropX: slot.cropX ?? 50,
 		cropY: slot.cropY ?? 50,
 		fit: slot.fit ?? 'cover',
+		filter: slot.filter ?? 'none',
 		frame: slot.frame ?? 'paper',
 		h: slot.h,
 		id: createId('photo'),
@@ -616,7 +618,11 @@ function renderTemplates(): void {
 		template.stickers.forEach((item) => {
 			const decor = document.createElement('span');
 			decor.className = 'pc-template-sticker';
-			decor.textContent = item.content;
+			if (isSvgMarkup(item.content)) {
+				decor.innerHTML = item.content;
+			} else {
+				decor.textContent = item.content;
+			}
 			setLayerBox(decor, item.x, item.y, item.w, item.h, item.rotation ?? 0);
 			decor.style.color = item.color ?? '#171717';
 			stage.append(decor);
@@ -1011,6 +1017,7 @@ function renderPhotoLayer(node: HTMLElement, layer: PhotoLayer): void {
 		image.alt = '';
 		image.style.objectFit = layer.fit;
 		image.style.objectPosition = `${layer.cropX}% ${layer.cropY}%`;
+		image.style.filter = cssPhotoFilter(layer.filter);
 		image.style.transform = `scale(${layer.scale})`;
 		frame.append(image);
 	} else {
@@ -1090,7 +1097,11 @@ function renderStickerLayer(node: HTMLElement, layer: StickerLayer): void {
 	node.style.color = layer.color;
 	node.style.opacity = String(layer.opacity);
 	node.style.fontSize = `calc(var(--pc-surface-width) * ${Math.min(layer.w, layer.h) / 100 * 0.9})`;
-	node.textContent = layer.content;
+	if (isSvgMarkup(layer.content)) {
+		node.innerHTML = layer.content;
+	} else {
+		node.textContent = layer.content;
+	}
 	if (layer.background !== 'transparent') {
 		node.style.background = layer.background;
 		node.style.borderRadius = '12px';
@@ -1218,6 +1229,9 @@ function renderPhotoInspector(layer: PhotoLayer): void {
 		updateLayer(layer.id, { frame: value as FrameStyle }),
 	);
 	addSelectControl('Fit', layer.fit, ['cover', 'contain'], (value) => updateLayer(layer.id, { fit: value as PhotoLayer['fit'] }));
+	addSelectControl('Filter', layer.filter, ['none', 'warm', 'cool', 'mono', 'matte', 'vivid'], (value) =>
+		updateLayer(layer.id, { filter: value as PhotoFilter }),
+	);
 	addRangeControl(
 		'Crop X',
 		layer.cropX,
@@ -1409,10 +1423,28 @@ function fontOptions(): string[] {
 	return [
 		'Inter, Arial, sans-serif',
 		'Georgia, Times New Roman, serif',
+		'Brush Script MT, Snell Roundhand, Apple Chancery, cursive',
 		'Comic Sans MS, Bradley Hand, cursive',
 		'Courier New, monospace',
 		'Trebuchet MS, Arial, sans-serif',
 	];
+}
+
+function isSvgMarkup(value: string): boolean {
+	return value.trimStart().startsWith('<svg');
+}
+
+function cssPhotoFilter(filter: PhotoFilter): string {
+	const map: Record<PhotoFilter, string> = {
+		cool: 'saturate(0.92) contrast(1.04) brightness(1.03) sepia(0.08) hue-rotate(178deg)',
+		matte: 'saturate(0.78) contrast(0.92) brightness(1.08) sepia(0.1)',
+		mono: 'grayscale(1) contrast(1.08) brightness(1.02)',
+		none: 'none',
+		vivid: 'saturate(1.26) contrast(1.08) brightness(1.02)',
+		warm: 'saturate(1.04) contrast(1.03) brightness(1.03) sepia(0.16)',
+	};
+
+	return map[filter] ?? 'none';
 }
 
 interface LayerUpdateOptions {
@@ -1741,6 +1773,7 @@ function sanitizeLayers(value: unknown[]): DesignLayer[] {
 				cropX: clamp(toFiniteNumber(layer.cropX, 50), 0, 100),
 				cropY: clamp(toFiniteNumber(layer.cropY, 50), 0, 100),
 				fit: layer.fit === 'contain' ? 'contain' : 'cover',
+				filter: isPhotoFilter(layer.filter) ? layer.filter : 'none',
 				frame: isFrameStyle(layer.frame) ? layer.frame : 'paper',
 				kind: 'photo',
 				photoId: null,
@@ -1797,6 +1830,10 @@ function isSizeId(value: unknown): value is SizeId {
 
 function isFrameStyle(value: unknown): value is FrameStyle {
 	return value === 'clean' || value === 'paper' || value === 'polaroid' || value === 'film' || value === 'stamp' || value === 'soft' || value === 'shadow';
+}
+
+function isPhotoFilter(value: unknown): value is PhotoFilter {
+	return value === 'none' || value === 'warm' || value === 'cool' || value === 'mono' || value === 'matte' || value === 'vivid';
 }
 
 function renderToolbarState(): void {
