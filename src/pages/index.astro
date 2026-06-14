@@ -8,9 +8,9 @@ import layersIcon from 'lucide-static/icons/layers-3.svg?raw';
 import layoutIcon from 'lucide-static/icons/layout-template.svg?raw';
 import moonIcon from 'lucide-static/icons/moon.svg?raw';
 import paletteIcon from 'lucide-static/icons/palette.svg?raw';
+import pencilIcon from 'lucide-static/icons/pencil.svg?raw';
 import redoIcon from 'lucide-static/icons/redo-2.svg?raw';
 import saveIcon from 'lucide-static/icons/save.svg?raw';
-import searchIcon from 'lucide-static/icons/search.svg?raw';
 import shareIcon from 'lucide-static/icons/share-2.svg?raw';
 import shapesIcon from 'lucide-static/icons/shapes.svg?raw';
 import sparklesIcon from 'lucide-static/icons/sparkles.svg?raw';
@@ -147,12 +147,18 @@ const seoJsonLd = {
 	jsonLd={seoJsonLd}
 >
 	<header class="pc-topbar">
-		<a href="/" class="pc-brand" aria-label="Photo Collage home">
-			<span class="pc-brand-mark">
-				<img src="/Icons/favicon.svg" alt="" width="30" height="30" loading="eager" decoding="async" />
-			</span>
-			<span>Photo Collage</span>
-		</a>
+		<div class="pc-brand-group">
+			<a href="/" class="pc-brand" aria-label="Photo Collage home">
+				<span class="pc-brand-mark">
+					<img src="/Icons/favicon.svg" alt="" width="30" height="30" loading="eager" decoding="async" />
+				</span>
+				<span>Photo Collage</span>
+			</a>
+			<button id="open-templates" class="pc-button pc-button-secondary pc-templates-button" type="button">
+				<span class="pc-icon" set:html={layoutIcon} aria-hidden="true"></span>
+				Templates
+			</button>
+		</div>
 
 		<div class="pc-toolbar" aria-label="Editor toolbar">
 			<button id="undo-action" class="pc-tool-button" type="button" aria-label="Undo">
@@ -221,11 +227,6 @@ const seoJsonLd = {
 			</nav>
 
 			<div class="pc-panel-browser">
-				<label class="pc-panel-search">
-					<span class="pc-icon" set:html={searchIcon} aria-hidden="true"></span>
-					<input id="asset-search" type="search" autocomplete="off" placeholder="Search assets" aria-label="Search active panel" />
-				</label>
-
 				<section class="pc-panel-view" data-panel-view="templates" aria-labelledby="templates-title">
 					<div class="pc-panel-heading">
 						<div>
@@ -361,27 +362,6 @@ const seoJsonLd = {
 					<span id="active-template-label">Love Polaroids</span>
 					<span aria-hidden="true">/</span>
 					<span id="active-size-label">Instagram post</span>
-				</div>
-			</div>
-
-			<div class="pc-start-strip" aria-label="Fast start actions">
-				<div class="pc-start-copy">
-					<strong>Privacy-first collage maker</strong>
-					<span>No account · Browser editing · PNG/JPG export</span>
-				</div>
-				<div class="pc-start-actions">
-					<button id="quick-upload" class="pc-button pc-button-primary" type="button">
-						<span class="pc-icon" set:html={uploadIcon} aria-hidden="true"></span>
-						Upload photos
-					</button>
-					<button id="quick-template" class="pc-button pc-button-secondary" type="button">
-						<span class="pc-icon" set:html={layoutIcon} aria-hidden="true"></span>
-						Templates
-					</button>
-					<button id="quick-remix" class="pc-button pc-button-secondary" type="button">
-						<span class="pc-icon" set:html={sparklesIcon} aria-hidden="true"></span>
-						Remix
-					</button>
 				</div>
 			</div>
 
@@ -541,6 +521,25 @@ const seoJsonLd = {
 			</nav>
 		</div>
 	</footer>
+
+	<nav class="pc-mobile-bar" aria-label="Editor quick actions">
+		<button id="m-upload" class="pc-mobile-action" type="button">
+			<span class="pc-icon" set:html={uploadIcon} aria-hidden="true"></span>
+			<span>Upload</span>
+		</button>
+		<button id="m-templates" class="pc-mobile-action" type="button">
+			<span class="pc-icon" set:html={layoutIcon} aria-hidden="true"></span>
+			<span>Templates</span>
+		</button>
+		<button id="m-editor" class="pc-mobile-action" type="button">
+			<span class="pc-icon" set:html={pencilIcon} aria-hidden="true"></span>
+			<span>Editor</span>
+		</button>
+		<button id="m-download" class="pc-mobile-action pc-mobile-action-primary" type="button">
+			<span class="pc-icon" set:html={downloadIcon} aria-hidden="true"></span>
+			<span>Download</span>
+		</button>
+	</nav>
 	</main>
 </Layout>
 
