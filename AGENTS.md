@@ -4,7 +4,7 @@ Read this file before working on any prompt in this project.
 
 ## Project Context
 
-- This is an Astro photo collage editor for `photocollagemake.com`.
+- This is an Astro photo collage editor for `onlinephotocollage.com`.
 - The product should feel like a clean, premium, Canva-like collage editor with Vercel-style polish.
 - Use `DESIGN.md` as the main design reference before making UI changes.
 - Keep the interface light, neutral, modern, and product-focused. Avoid dark/orange Cloudflare-style branding unless the user explicitly asks for it.

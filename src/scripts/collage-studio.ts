@@ -116,7 +116,6 @@ const el = {
 	activeTemplateLabel: byId<HTMLSpanElement>('active-template-label'),
 	addBackgroundPhoto: byId<HTMLButtonElement>('add-background-photo'),
 	addText: byId<HTMLButtonElement>('add-text'),
-	assetSearch: byId<HTMLInputElement>('asset-search'),
 	backgroundList: byId<HTMLDivElement>('background-list'),
 	backgroundPhotoInput: byId<HTMLInputElement>('background-photo-input'),
 	backgroundPhotoList: byId<HTMLDivElement>('background-photo-list'),
@@ -143,9 +142,6 @@ const el = {
 	photoCount: byId<HTMLParagraphElement>('photo-count'),
 	photoTray: byId<HTMLDivElement>('photo-tray'),
 	preview: byId<HTMLDivElement>('collage-preview'),
-	quickRemix: byId<HTMLButtonElement>('quick-remix'),
-	quickTemplate: byId<HTMLButtonElement>('quick-template'),
-	quickUpload: byId<HTMLButtonElement>('quick-upload'),
 	redo: byId<HTMLButtonElement>('redo-action'),
 	save: byId<HTMLButtonElement>('save-design'),
 	share: byId<HTMLButtonElement>('share-collage'),
@@ -511,39 +507,6 @@ function smartLayoutTemplate(mode: SmartLayoutMode): ReturnType<typeof getTempla
 	return getTemplate('story-clean-recap');
 }
 
-function remixSmartLayout(): void {
-	if (state.photos.length < 2) {
-		state.activePanel = 'uploads';
-		setStatus('Upload at least two photos, then Remix will generate a fresh layout.');
-		renderAll();
-		el.input.click();
-		return;
-	}
-
-	const candidates = smartRemixCandidates();
-	const currentIndex = candidates.findIndex((template) => template.id === state.templateId);
-	const nextTemplate = candidates[(currentIndex + 1 + candidates.length) % candidates.length] ?? candidates[0];
-	applyTemplate(nextTemplate.id);
-	assignPhotosToEmptySlots();
-	state.activePanel = 'uploads';
-	markDirty(`${nextTemplate.name} remix generated.`);
-	renderAll();
-}
-
-function smartRemixCandidates(): ReturnType<typeof getTemplate>[] {
-	const count = state.photos.length;
-	const ids =
-		count >= 5
-			? ['post-photo-dump', 'story-year-recap-gallery', 'post-moodboard-studio', 'story-scrapbook-zine']
-			: count === 4
-			? ['family-soft-grid', 'post-clean-commerce-grid', 'story-scrapbook-zine', 'post-photo-dump']
-			: count === 3
-			? ['post-editorial-cover', 'friends-camera-play', 'aesthetic-zine', 'story-clean-recap']
-			: ['story-clean-recap', 'love-polaroid-stack', 'post-minimal-quote'];
-
-	return ids.map((id) => getTemplate(id));
-}
-
 function fileToPhoto(file: File): UploadedPhoto {
 	const url = URL.createObjectURL(file);
 	const image = new Image();
@@ -619,7 +582,6 @@ function deletePhoto(photoId: string): void {
 
 function renderAll(): void {
 	renderPanelViews();
-	renderPanelSearch();
 	renderSizeSelect();
 	renderCategories();
 	renderTemplates();
@@ -642,20 +604,6 @@ function renderPanelViews(): void {
 	document.querySelectorAll<HTMLElement>('[data-panel-view]').forEach((panel) => {
 		panel.classList.toggle('hidden', panel.dataset.panelView !== state.activePanel);
 	});
-}
-
-function renderPanelSearch(): void {
-	const labels: Record<StudioState['activePanel'], string> = {
-		backgrounds: 'Search...',
-		elements: 'Search...',
-		layers: 'Search...',
-		templates: 'Search...',
-		text: 'Search...',
-		uploads: 'Search...',
-	};
-
-	el.assetSearch.value = state.assetSearch;
-	el.assetSearch.placeholder = labels[state.activePanel];
 }
 
 function renderSizeSelect(): void {
@@ -2305,6 +2253,12 @@ function redo(): void {
 	restoreSnapshot(next);
 }
 
+/** Persist the current design, then open the full template gallery page. */
+function openTemplateGallery(): void {
+	persistDesign();
+	window.location.href = '/templates/';
+}
+
 function setupEvents(): void {
 	updateShareVisibility();
 
@@ -2318,16 +2272,6 @@ function setupEvents(): void {
 		});
 	});
 
-	el.assetSearch.addEventListener('input', () => {
-		state.assetSearch = el.assetSearch.value;
-		renderCategories();
-		renderTemplates();
-		renderUploads();
-		renderTextPresets();
-		renderElements();
-		renderBackgrounds();
-		renderLayers();
-	});
 	el.input.addEventListener('change', () => {
 		addFiles(el.input.files);
 		el.input.value = '';
@@ -2358,19 +2302,22 @@ function setupEvents(): void {
 	});
 	el.undo.addEventListener('click', undo);
 	el.redo.addEventListener('click', redo);
-	el.quickUpload.addEventListener('click', () => {
+	el.smartBalanced.addEventListener('click', () => applySmartLayout('balanced'));
+	el.smartStory.addEventListener('click', () => applySmartLayout('story'));
+	el.smartMoodboard.addEventListener('click', () => applySmartLayout('moodboard'));
+
+	// Mobile bottom action bar mirrors the key actions on small screens.
+	document.getElementById('m-upload')?.addEventListener('click', () => {
 		state.activePanel = 'uploads';
 		renderAll();
 		el.input.click();
 	});
-	el.quickTemplate.addEventListener('click', () => {
-		persistDesign();
-		window.location.href = '/templates/';
+	document.getElementById('m-templates')?.addEventListener('click', openTemplateGallery);
+	document.getElementById('m-editor')?.addEventListener('click', () => {
+		el.stage.scrollIntoView({ behavior: 'smooth', block: 'center' });
 	});
-	el.quickRemix.addEventListener('click', remixSmartLayout);
-	el.smartBalanced.addEventListener('click', () => applySmartLayout('balanced'));
-	el.smartStory.addEventListener('click', () => applySmartLayout('story'));
-	el.smartMoodboard.addEventListener('click', () => applySmartLayout('moodboard'));
+	document.getElementById('m-download')?.addEventListener('click', () => void finishCollage());
+	document.getElementById('open-templates')?.addEventListener('click', openTemplateGallery);
 
 	el.sizeSelect.addEventListener('change', () => {
 		commitHistory();

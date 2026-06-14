@@ -1,6 +1,8 @@
 import type { APIRoute } from 'astro';
 import { useCasePages } from '../lib/use-cases';
 
+const siteUrl = 'https://onlinephotocollage.com';
+
 const sitemapPages = [
 	{ path: '/', changefreq: 'weekly', priority: '1.0' },
 	{ path: '/templates/', changefreq: 'weekly', priority: '0.9' },
@@ -20,7 +22,7 @@ const escapeXml = (value: string) =>
 		.replaceAll('>', '&gt;');
 
 export const GET: APIRoute = ({ site }) => {
-	const baseUrl = site ?? new URL('https://onlinephotocollage.com');
+	const baseUrl = site ?? new URL(siteUrl);
 	const urls = sitemapPages
 		.map(({ path, changefreq, priority }) => {
 			const loc = new URL(path, baseUrl).toString();
