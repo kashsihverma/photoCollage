@@ -69,16 +69,27 @@ interface AddFileOptions {
 	useFirstAsBackground?: boolean;
 }
 
+type ShareTarget = 'copy' | 'download' | 'instagram' | 'native' | 'snapchat' | 'whatsapp';
+
 const MAX_PHOTOS = 40;
 const MAX_FILE_SIZE = 18 * 1024 * 1024;
 const HISTORY_LIMIT = 50;
 const STORAGE_KEY = 'photo-collage-premium-design';
 const THEME_STORAGE_KEY = 'photo-collage-theme';
+const AUTOSAVE_DELAY = 900;
 
 const initialTemplate = templates[0];
 let activeLiveEditKey: string | null = null;
+let autosaveTimer = 0;
 let canvasResizeAnimationFrame = 0;
 let pointerAnimationFrame = 0;
+
+const layerActionIcons = {
+	copy:
+		'<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1" /></svg>',
+	trash:
+		'<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6" /><path d="M14 11v6" /></svg>',
+} as const;
 
 const state: StudioState = {
 	activeCategory: 'All',
@@ -132,9 +143,18 @@ const el = {
 	photoCount: byId<HTMLParagraphElement>('photo-count'),
 	photoTray: byId<HTMLDivElement>('photo-tray'),
 	preview: byId<HTMLDivElement>('collage-preview'),
+	quickRemix: byId<HTMLButtonElement>('quick-remix'),
+	quickTemplate: byId<HTMLButtonElement>('quick-template'),
+	quickUpload: byId<HTMLButtonElement>('quick-upload'),
 	redo: byId<HTMLButtonElement>('redo-action'),
 	save: byId<HTMLButtonElement>('save-design'),
+	share: byId<HTMLButtonElement>('share-collage'),
+	shareClose: byId<HTMLButtonElement>('share-close'),
+	sharePanel: byId<HTMLDivElement>('share-panel'),
 	sizeSelect: byId<HTMLSelectElement>('size-select'),
+	smartBalanced: byId<HTMLButtonElement>('smart-balanced'),
+	smartMoodboard: byId<HTMLButtonElement>('smart-moodboard'),
+	smartStory: byId<HTMLButtonElement>('smart-story'),
 	stage: byId<HTMLDivElement>('editor-stage'),
 	statusLine: byId<HTMLParagraphElement>('status-line'),
 	templateList: byId<HTMLDivElement>('template-list'),
@@ -144,6 +164,7 @@ const el = {
 };
 
 const downloadButtonIdleHtml = el.finish.innerHTML;
+const shareButtonIdleHtml = el.share.innerHTML;
 
 function byId<T extends HTMLElement>(id: string): T {
 	const element = document.getElementById(id);
@@ -216,6 +237,7 @@ function markDirty(message?: string): void {
 	el.downloadPanel.classList.add('hidden');
 	el.exportEmpty.classList.remove('sr-only');
 	if (message) setStatus(message);
+	scheduleAutosave();
 }
 
 function revokeExportUrl(): void {
@@ -223,6 +245,14 @@ function revokeExportUrl(): void {
 	URL.revokeObjectURL(state.exportUrl);
 	state.exportUrl = null;
 	el.downloadLink.href = '#';
+}
+
+function scheduleAutosave(): void {
+	if (autosaveTimer) window.clearTimeout(autosaveTimer);
+	autosaveTimer = window.setTimeout(() => {
+		autosaveTimer = 0;
+		persistDesign();
+	}, AUTOSAVE_DELAY);
 }
 
 function wait(milliseconds: number): Promise<void> {
@@ -273,6 +303,7 @@ function setupTheme(): void {
 
 function setDownloadButtonBusy(isBusy: boolean): void {
 	el.finish.disabled = isBusy;
+	el.share.disabled = isBusy;
 	el.finish.classList.toggle('is-loading', isBusy);
 
 	if (isBusy) {
@@ -283,6 +314,24 @@ function setDownloadButtonBusy(isBusy: boolean): void {
 
 	el.finish.removeAttribute('aria-busy');
 	el.finish.innerHTML = downloadButtonIdleHtml;
+}
+
+function setShareButtonBusy(isBusy: boolean): void {
+	el.share.disabled = isBusy;
+	el.finish.disabled = isBusy;
+	el.share.classList.toggle('is-loading', isBusy);
+	el.sharePanel.querySelectorAll<HTMLButtonElement>('.pc-share-option').forEach((button) => {
+		button.disabled = isBusy;
+	});
+
+	if (isBusy) {
+		el.share.setAttribute('aria-busy', 'true');
+		el.share.innerHTML = '<span class="pc-button-spinner" aria-hidden="true"></span><span>Sharing...</span>';
+		return;
+	}
+
+	el.share.removeAttribute('aria-busy');
+	el.share.innerHTML = shareButtonIdleHtml;
 }
 
 function getSelectedLayer(): DesignLayer | null {
@@ -385,6 +434,7 @@ function addFiles(files: Iterable<File> | ArrayLike<File> | null | undefined, op
 	const accepted = incoming.filter((file) => file.type.startsWith('image/') && file.size <= MAX_FILE_SIZE);
 	const remainingSlots = Math.max(0, MAX_PHOTOS - state.photos.length);
 	const nextPhotos = accepted.slice(0, remainingSlots);
+	const hadPhotos = state.photos.length > 0;
 
 	if (!nextPhotos.length) {
 		setStatus(
@@ -408,6 +458,16 @@ function addFiles(files: Iterable<File> | ArrayLike<File> | null | undefined, op
 	}
 
 	const rejectedCount = incoming.length - nextPhotos.length;
+	if (!options.useFirstAsBackground && !hadPhotos && state.photos.length >= 2) {
+		applySmartLayout('balanced', false);
+		setStatus(
+			rejectedCount > 0
+				? `Smart layout generated with ${nextPhotos.length} photos. ${rejectedCount} skipped.`
+				: `Smart layout generated with ${nextPhotos.length} photos.`,
+		);
+		return;
+	}
+
 	markDirty(
 		options.useFirstAsBackground
 			? rejectedCount > 0
@@ -418,6 +478,70 @@ function addFiles(files: Iterable<File> | ArrayLike<File> | null | undefined, op
 			: `${nextPhotos.length} photos added.`,
 	);
 	renderAll();
+}
+
+type SmartLayoutMode = 'balanced' | 'story' | 'moodboard';
+
+function applySmartLayout(mode: SmartLayoutMode, withHistory = true): void {
+	const nextTemplate = smartLayoutTemplate(mode);
+	applyTemplate(nextTemplate.id, withHistory);
+	assignPhotosToEmptySlots();
+	state.activePanel = 'uploads';
+	markDirty(`${nextTemplate.name} generated.`);
+	renderAll();
+}
+
+function smartLayoutTemplate(mode: SmartLayoutMode): ReturnType<typeof getTemplate> {
+	const count = state.photos.length;
+	if (mode === 'story') {
+		if (count >= 5) return getTemplate('story-year-recap-gallery');
+		if (count >= 4) return getTemplate('story-scrapbook-zine');
+		return getTemplate('story-clean-recap');
+	}
+
+	if (mode === 'moodboard') {
+		if (count >= 5) return getTemplate('post-moodboard-studio');
+		if (count >= 4) return getTemplate('post-photo-dump');
+		return getTemplate('aesthetic-zine');
+	}
+
+	if (count >= 5) return getTemplate('post-photo-dump');
+	if (count === 4) return getTemplate('family-soft-grid');
+	if (count === 3) return getTemplate('post-editorial-cover');
+	return getTemplate('story-clean-recap');
+}
+
+function remixSmartLayout(): void {
+	if (state.photos.length < 2) {
+		state.activePanel = 'uploads';
+		setStatus('Upload at least two photos, then Remix will generate a fresh layout.');
+		renderAll();
+		el.input.click();
+		return;
+	}
+
+	const candidates = smartRemixCandidates();
+	const currentIndex = candidates.findIndex((template) => template.id === state.templateId);
+	const nextTemplate = candidates[(currentIndex + 1 + candidates.length) % candidates.length] ?? candidates[0];
+	applyTemplate(nextTemplate.id);
+	assignPhotosToEmptySlots();
+	state.activePanel = 'uploads';
+	markDirty(`${nextTemplate.name} remix generated.`);
+	renderAll();
+}
+
+function smartRemixCandidates(): ReturnType<typeof getTemplate>[] {
+	const count = state.photos.length;
+	const ids =
+		count >= 5
+			? ['post-photo-dump', 'story-year-recap-gallery', 'post-moodboard-studio', 'story-scrapbook-zine']
+			: count === 4
+			? ['family-soft-grid', 'post-clean-commerce-grid', 'story-scrapbook-zine', 'post-photo-dump']
+			: count === 3
+			? ['post-editorial-cover', 'friends-camera-play', 'aesthetic-zine', 'story-clean-recap']
+			: ['story-clean-recap', 'love-polaroid-stack', 'post-minimal-quote'];
+
+	return ids.map((id) => getTemplate(id));
 }
 
 function fileToPhoto(file: File): UploadedPhoto {
@@ -845,11 +969,45 @@ function renderLayers(): void {
 	}
 
 	for (const { index, layer } of visible) {
-		const button = document.createElement('button');
-		button.className = 'pc-layer-row';
-		button.type = 'button';
-		button.setAttribute('aria-pressed', String(layer.id === state.selectedId));
-		button.addEventListener('click', () => {
+		const row = document.createElement('div');
+		row.className = 'pc-layer-row';
+		row.draggable = true;
+		row.dataset.layerId = layer.id;
+		row.setAttribute('aria-pressed', String(layer.id === state.selectedId));
+		row.addEventListener('dragstart', (event) => {
+			event.dataTransfer?.setData('layer-id', layer.id);
+			event.dataTransfer?.setData('text/plain', layer.id);
+			event.dataTransfer?.setDragImage(row, 16, 16);
+			row.classList.add('is-dragging');
+		});
+		row.addEventListener('dragend', () => {
+			row.classList.remove('is-dragging');
+			clearLayerDropIndicators();
+		});
+		row.addEventListener('dragover', (event) => {
+			event.preventDefault();
+			const draggedId = event.dataTransfer?.getData('layer-id') || event.dataTransfer?.getData('text/plain');
+			const draggedRow = draggedId ? el.layerList.querySelector<HTMLElement>(`.pc-layer-row[data-layer-id="${draggedId}"]`) : null;
+			const position = layerDropPosition(event, row);
+			clearLayerDropIndicators(row);
+			row.classList.toggle('is-drop-before', position === 'before');
+			row.classList.toggle('is-drop-after', position === 'after');
+			if (draggedRow && draggedRow !== row) animateLayerDomMove(draggedRow, row, position);
+		});
+		row.addEventListener('dragleave', () => {
+			row.classList.remove('is-drop-before', 'is-drop-after');
+		});
+		row.addEventListener('drop', (event) => {
+			event.preventDefault();
+			clearLayerDropIndicators();
+			commitLayerDomOrder();
+		});
+
+		const selectButton = document.createElement('button');
+		selectButton.className = 'pc-layer-select';
+		selectButton.type = 'button';
+		selectButton.setAttribute('aria-label', `Select ${layerName(layer, index)}`);
+		selectButton.addEventListener('click', () => {
 			state.selectedId = layer.id;
 			renderCanvas();
 			renderInspector();
@@ -868,8 +1026,30 @@ function renderLayers(): void {
 		detail.textContent = layerDetail(layer);
 		label.append(name, detail);
 
-		button.append(badge, label);
-		el.layerList.append(button);
+		selectButton.append(badge, label);
+
+		const actions = document.createElement('span');
+		actions.className = 'pc-layer-actions';
+		const actionItems: Array<[string, string, () => void]> = [
+			[layerActionIcons.copy, 'Duplicate layer', () => duplicateLayer(layer.id)],
+			[layerActionIcons.trash, 'Delete layer', () => deleteLayer(layer.id)],
+		];
+		for (const [icon, title, handler] of actionItems) {
+			const action = document.createElement('button');
+			action.type = 'button';
+			action.innerHTML = icon;
+			action.title = title;
+			action.setAttribute('aria-label', `${title}: ${layerName(layer, index)}`);
+			action.addEventListener('click', (event) => {
+				event.stopPropagation();
+				handler();
+			});
+			action.addEventListener('dragstart', (event) => event.preventDefault());
+			actions.append(action);
+		}
+
+		row.append(selectButton, actions);
+		el.layerList.append(row);
 	}
 }
 
@@ -954,6 +1134,17 @@ function renderCanvas(): void {
 		node.addEventListener('keydown', (event) => {
 			if ((event.target as HTMLElement).closest('.pc-text-content')) return;
 			if (event.key === 'Delete' || event.key === 'Backspace') deleteSelectedLayer();
+			const nudgeKeys: Record<string, [number, number]> = {
+				ArrowDown: [0, event.shiftKey ? 2 : 0.5],
+				ArrowLeft: [event.shiftKey ? -2 : -0.5, 0],
+				ArrowRight: [event.shiftKey ? 2 : 0.5, 0],
+				ArrowUp: [0, event.shiftKey ? -2 : -0.5],
+			};
+			const nudge = nudgeKeys[event.key];
+			if (nudge) {
+				event.preventDefault();
+				nudgeLayer(layer.id, nudge[0], nudge[1]);
+			}
 		});
 
 		if (layer.id === state.selectedId) {
@@ -1546,6 +1737,12 @@ function addStickerLayer(presetId: string): void {
 function duplicateSelectedLayer(): void {
 	const layer = getSelectedLayer();
 	if (!layer) return;
+	duplicateLayer(layer.id);
+}
+
+function duplicateLayer(id: string): void {
+	const layer = state.layers.find((item) => item.id === id);
+	if (!layer) return;
 	commitHistory();
 	const copy = structuredClone(layer) as DesignLayer;
 	copy.id = createId(layer.kind);
@@ -1560,11 +1757,80 @@ function duplicateSelectedLayer(): void {
 function deleteSelectedLayer(): void {
 	const layer = getSelectedLayer();
 	if (!layer) return;
+	deleteLayer(layer.id);
+}
+
+function deleteLayer(id: string): void {
+	const layer = state.layers.find((item) => item.id === id);
+	if (!layer) return;
 	commitHistory();
 	state.layers = state.layers.filter((item) => item.id !== layer.id);
 	state.selectedId = null;
 	markDirty('Object deleted.');
 	renderAll();
+}
+
+type LayerDropPosition = 'before' | 'after';
+
+function layerDropPosition(event: DragEvent, row: HTMLElement): LayerDropPosition {
+	const rect = row.getBoundingClientRect();
+	return event.clientY < rect.top + rect.height / 2 ? 'before' : 'after';
+}
+
+function clearLayerDropIndicators(except?: HTMLElement): void {
+	el.layerList.querySelectorAll<HTMLElement>('.pc-layer-row').forEach((row) => {
+		if (row === except) return;
+		row.classList.remove('is-drop-before', 'is-drop-after');
+	});
+}
+
+function animateLayerDomMove(draggedRow: HTMLElement, targetRow: HTMLElement, position: LayerDropPosition): void {
+	const rows = Array.from(el.layerList.querySelectorAll<HTMLElement>('.pc-layer-row'));
+	const before = new Map(rows.map((row) => [row, row.getBoundingClientRect().top]));
+
+	if (position === 'before') {
+		el.layerList.insertBefore(draggedRow, targetRow);
+	} else {
+		el.layerList.insertBefore(draggedRow, targetRow.nextElementSibling);
+	}
+
+	for (const row of rows) {
+		const previousTop = before.get(row);
+		if (previousTop === undefined) continue;
+		const delta = previousTop - row.getBoundingClientRect().top;
+		if (!delta) continue;
+		row.animate([{ transform: `translateY(${delta}px)` }, { transform: 'translateY(0)' }], {
+			duration: 180,
+			easing: 'cubic-bezier(.2,.8,.2,1)',
+		});
+	}
+}
+
+function commitLayerDomOrder(): void {
+	const visualIds = Array.from(el.layerList.querySelectorAll<HTMLElement>('.pc-layer-row'))
+		.map((row) => row.dataset.layerId)
+		.filter((id): id is string => Boolean(id));
+	if (visualIds.length !== state.layers.length) return;
+	const nextIds = [...visualIds].reverse();
+	const currentIds = state.layers.map((layer) => layer.id);
+	if (nextIds.every((id, index) => id === currentIds[index])) return;
+	commitHistory();
+	const byId = new Map(state.layers.map((layer) => [layer.id, layer]));
+	state.layers = nextIds.map((id) => byId.get(id)).filter((layer): layer is DesignLayer => Boolean(layer));
+	markDirty('Layer order updated.');
+	renderAll();
+}
+
+function nudgeLayer(id: string, dx: number, dy: number): void {
+	const layer = state.layers.find((item) => item.id === id);
+	if (!layer) return;
+	commitHistory();
+	layer.x = clamp(layer.x + dx, -20, 110);
+	layer.y = clamp(layer.y + dy, -20, 110);
+	markDirty('Object nudged.');
+	renderCanvas();
+	renderInspector();
+	if (state.activePanel === 'layers') renderLayers();
 }
 
 function startPointer(event: PointerEvent, id: string, mode: PointerSession['mode']): void {
@@ -1669,23 +1935,7 @@ async function finishCollage(): Promise<void> {
 	setStatus('Preparing your download...');
 
 	try {
-		await renderDesignToCanvas(el.canvas, {
-			background: getBackground(state.backgroundId),
-			backgroundPhoto: getBackgroundPhoto(),
-			backgroundTone: state.backgroundTone,
-			format: state.format,
-			layers: state.layers,
-			photos: state.photos,
-			size: getSize(state.sizeId),
-		});
-		const blob = await canvasToBlob(el.canvas, state.format);
-		revokeExportUrl();
-		state.exportUrl = URL.createObjectURL(blob);
-		el.downloadLink.href = state.exportUrl;
-		el.downloadLink.download = `photo-collage-${getSize(state.sizeId).name.toLowerCase().replaceAll(' ', '-')}.${state.format === 'jpeg' ? 'jpg' : 'png'}`;
-		el.downloadPanel.classList.add('hidden');
-		el.exportEmpty.classList.add('sr-only');
-		el.downloadLink.click();
+		startDownload(await renderExportBlob());
 		setStatus('Download started.');
 		await wait(650);
 	} catch (error) {
@@ -1695,12 +1945,212 @@ async function finishCollage(): Promise<void> {
 	}
 }
 
+function toggleSharePanel(): void {
+	if (el.share.hidden) return;
+	const willOpen = el.sharePanel.classList.contains('hidden');
+	el.sharePanel.classList.toggle('hidden', !willOpen);
+	el.share.setAttribute('aria-expanded', String(willOpen));
+	setStatus(willOpen ? 'Choose where to share your collage.' : 'Share options closed.');
+}
+
+function closeSharePanel(): void {
+	el.sharePanel.classList.add('hidden');
+	el.share.setAttribute('aria-expanded', 'false');
+}
+
+function updateShareVisibility(): void {
+	const isAvailable = isMobileShareBrowser();
+	el.share.hidden = !isAvailable;
+	el.share.disabled = !isAvailable;
+	el.share.closest('.pc-top-actions')?.classList.toggle('pc-share-hidden', !isAvailable);
+	if (!isAvailable) closeSharePanel();
+}
+
+function isMobileShareBrowser(): boolean {
+	const userAgent = navigator.userAgent || '';
+	const isMobileUserAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+	const isTouchIpad = /Macintosh/i.test(userAgent) && navigator.maxTouchPoints > 1;
+	const isCoarseTouch = window.matchMedia?.('(hover: none) and (pointer: coarse)').matches ?? false;
+
+	return isMobileUserAgent || isTouchIpad || isCoarseTouch;
+}
+
+async function shareCollage(target: ShareTarget): Promise<void> {
+	if (el.share.getAttribute('aria-busy') === 'true') return;
+	setShareButtonBusy(true);
+	setStatus(target === 'download' ? 'Preparing your download...' : 'Preparing your share image...');
+
+	try {
+		const blob = await renderExportBlob();
+		if (target === 'copy') {
+			const copied = await copyRenderedImageToClipboard();
+			if (copied) {
+				closeSharePanel();
+				setStatus('Collage copied. Paste it into WhatsApp Web, Instagram, Snapchat, or another app.');
+				return;
+			}
+
+			startDownload(blob);
+			closeSharePanel();
+			setStatus('Image copy is not available in this browser. Download started instead.');
+			return;
+		}
+
+		if (target === 'download') {
+			startDownload(blob);
+			closeSharePanel();
+			setStatus('Download started. Upload the image anywhere you like.');
+			return;
+		}
+
+		const file = new File([blob], exportFileName(), { type: blob.type || exportMimeType() });
+		const appLabel = shareTargetLabel(target);
+
+		if (canShareFile(file) && navigator.share) {
+			try {
+				await navigator.share({
+					files: [file],
+					text: 'Made with Photo Collage.',
+					title: 'Photo Collage',
+				});
+				closeSharePanel();
+				setStatus(`${appLabel} share opened. Pick the app from your share sheet.`);
+			} catch (error) {
+				if (error instanceof DOMException && error.name === 'AbortError') throw error;
+				startDownload(blob);
+				closeSharePanel();
+				setStatus(`${appLabel} share was blocked by this browser. Download started instead.`);
+			}
+			return;
+		}
+
+		await handleWebShareFallback(target, blob);
+	} catch (error) {
+		if (error instanceof DOMException && error.name === 'AbortError') {
+			setStatus('Share cancelled.');
+			return;
+		}
+		setStatus(error instanceof Error ? error.message : 'Could not share the collage.');
+	} finally {
+		setShareButtonBusy(false);
+	}
+}
+
+async function handleWebShareFallback(target: Exclude<ShareTarget, 'copy' | 'download'>, blob: Blob): Promise<void> {
+	const appLabel = shareTargetLabel(target);
+	const copied = await copyRenderedImageToClipboard();
+
+	if (!copied) startDownload(blob);
+	if (target === 'native') {
+		closeSharePanel();
+		setStatus(
+			copied
+				? 'Browser share is not available here. Collage copied so you can paste it into another app.'
+				: 'Browser share is not available here. Download started instead.',
+		);
+		return;
+	}
+
+	openShareDestination(target);
+	closeSharePanel();
+
+	if (copied) {
+		setStatus(`${appLabel} opened for web. Paste the copied collage image into the app.`);
+		return;
+	}
+
+	setStatus(`${appLabel} opened for web. Download started so you can upload the collage there.`);
+}
+
+function canShareFile(file: File): boolean {
+	if (!navigator.share) return false;
+	if (!navigator.canShare) return true;
+	return navigator.canShare({ files: [file] });
+}
+
+function shareTargetLabel(target: ShareTarget): string {
+	const labels: Record<ShareTarget, string> = {
+		copy: 'Copy image',
+		download: 'Download',
+		instagram: 'Instagram',
+		native: 'App',
+		snapchat: 'Snapchat',
+		whatsapp: 'WhatsApp',
+	};
+
+	return labels[target];
+}
+
+function isShareTarget(value: string | undefined): value is ShareTarget {
+	return value === 'copy' || value === 'download' || value === 'instagram' || value === 'native' || value === 'snapchat' || value === 'whatsapp';
+}
+
+async function copyRenderedImageToClipboard(): Promise<boolean> {
+	if (!navigator.clipboard?.write || !('ClipboardItem' in window)) return false;
+
+	try {
+		const pngBlob = await canvasToBlob(el.canvas, 'png');
+		await navigator.clipboard.write([new ClipboardItem({ 'image/png': pngBlob })]);
+		return true;
+	} catch {
+		return false;
+	}
+}
+
+function openShareDestination(target: Exclude<ShareTarget, 'copy' | 'download' | 'native'>): void {
+	const urls: Record<Exclude<ShareTarget, 'copy' | 'download' | 'native'>, string> = {
+		instagram: 'https://www.instagram.com/',
+		snapchat: 'https://web.snapchat.com/',
+		whatsapp: 'https://web.whatsapp.com/',
+	};
+
+	window.open(urls[target], '_blank', 'noopener');
+}
+
+async function renderExportBlob(): Promise<Blob> {
+	await renderDesignToCanvas(el.canvas, {
+		background: getBackground(state.backgroundId),
+		backgroundPhoto: getBackgroundPhoto(),
+		backgroundTone: state.backgroundTone,
+		format: state.format,
+		layers: state.layers,
+		photos: state.photos,
+		size: getSize(state.sizeId),
+	});
+
+	return canvasToBlob(el.canvas, state.format);
+}
+
+function startDownload(blob: Blob): void {
+	revokeExportUrl();
+	state.exportUrl = URL.createObjectURL(blob);
+	el.downloadLink.href = state.exportUrl;
+	el.downloadLink.download = exportFileName();
+	el.downloadPanel.classList.add('hidden');
+	el.exportEmpty.classList.add('sr-only');
+	el.downloadLink.click();
+}
+
+function exportFileName(): string {
+	const sizeName = getSize(state.sizeId).name.toLowerCase().replaceAll(' ', '-');
+	return `photo-collage-${sizeName}.${state.format === 'jpeg' ? 'jpg' : 'png'}`;
+}
+
+function exportMimeType(): string {
+	return state.format === 'jpeg' ? 'image/jpeg' : 'image/png';
+}
+
 function saveDesign(): void {
+	if (persistDesign()) setStatus('Design saved in this browser.');
+}
+
+function persistDesign(): boolean {
 	try {
 		localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot()));
-		setStatus('Design saved.');
+		return true;
 	} catch {
 		setStatus('Could not save this design in your browser.');
+		return false;
 	}
 }
 
@@ -1856,6 +2306,8 @@ function redo(): void {
 }
 
 function setupEvents(): void {
+	updateShareVisibility();
+
 	document.querySelectorAll<HTMLButtonElement>('[data-panel]').forEach((button) => {
 		button.addEventListener('click', () => {
 			const panel = button.dataset.panel;
@@ -1895,8 +2347,30 @@ function setupEvents(): void {
 	el.deleteLayer.addEventListener('click', deleteSelectedLayer);
 	el.finish.addEventListener('click', () => void finishCollage());
 	el.save.addEventListener('click', saveDesign);
+	el.share.addEventListener('click', toggleSharePanel);
+	el.shareClose.addEventListener('click', closeSharePanel);
+	el.sharePanel.querySelectorAll<HTMLButtonElement>('[data-share-target]').forEach((button) => {
+		button.addEventListener('click', () => {
+			const target = button.dataset.shareTarget;
+			if (!isShareTarget(target)) return;
+			void shareCollage(target);
+		});
+	});
 	el.undo.addEventListener('click', undo);
 	el.redo.addEventListener('click', redo);
+	el.quickUpload.addEventListener('click', () => {
+		state.activePanel = 'uploads';
+		renderAll();
+		el.input.click();
+	});
+	el.quickTemplate.addEventListener('click', () => {
+		persistDesign();
+		window.location.href = '/templates/';
+	});
+	el.quickRemix.addEventListener('click', remixSmartLayout);
+	el.smartBalanced.addEventListener('click', () => applySmartLayout('balanced'));
+	el.smartStory.addEventListener('click', () => applySmartLayout('story'));
+	el.smartMoodboard.addEventListener('click', () => applySmartLayout('moodboard'));
 
 	el.sizeSelect.addEventListener('change', () => {
 		commitHistory();
@@ -1950,9 +2424,17 @@ function setupEvents(): void {
 		addFiles(files);
 	});
 	window.addEventListener('beforeunload', () => {
+		if (autosaveTimer) {
+			window.clearTimeout(autosaveTimer);
+			persistDesign();
+		}
 		revokeExportUrl();
 		for (const photo of state.photos) URL.revokeObjectURL(photo.url);
 	});
+	window.addEventListener('keydown', (event) => {
+		if (event.key === 'Escape') closeSharePanel();
+	});
+	window.addEventListener('resize', updateShareVisibility);
 }
 
 function isPanel(value: string | undefined): value is StudioState['activePanel'] {
@@ -1980,7 +2462,16 @@ function toFiniteNumber(value: unknown, fallback: number): number {
 	return Number.isFinite(parsed) ? parsed : fallback;
 }
 
+function templateIdFromUrl(): string | null {
+	const params = new URLSearchParams(window.location.search);
+	const templateId = params.get('template');
+	if (!templateId || !templates.some((template) => template.id === templateId)) return null;
+	return templateId;
+}
+
 tryLoadSavedDesign();
+const requestedTemplateId = templateIdFromUrl();
+if (requestedTemplateId) applyTemplate(requestedTemplateId, false);
 setupTheme();
 setupEvents();
 renderAll();

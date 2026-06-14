@@ -1,7 +1,10 @@
 import type { APIRoute } from 'astro';
+import { useCasePages } from '../lib/use-cases';
 
 const sitemapPages = [
 	{ path: '/', changefreq: 'weekly', priority: '1.0' },
+	{ path: '/templates/', changefreq: 'weekly', priority: '0.9' },
+	...useCasePages.map((page) => ({ path: `/${page.slug}/`, changefreq: 'weekly', priority: '0.8' })),
 	{ path: '/about-us/', changefreq: 'monthly', priority: '0.7' },
 	{ path: '/contact-us/', changefreq: 'monthly', priority: '0.6' },
 	{ path: '/privacy-policy/', changefreq: 'yearly', priority: '0.3' },

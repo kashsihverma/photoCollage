@@ -1,0 +1,118 @@
+---
+import Layout from '../layouts/Layout.astro';
+import {
+	backgrounds,
+	categories,
+	getBackground,
+	getSize,
+	templateImages,
+	templates,
+	type StickerPresetLayer,
+} from '../lib/collage/templates';
+
+const pageTitle = 'Photo Collage Templates | Browse and Open in Editor';
+const pageDescription =
+	'Browse photo collage templates for Instagram, weddings, birthdays, travel, mood boards, products, and print, then open any template in the editor.';
+const canonical = 'https://onlinephotocollage.com/templates/';
+
+const backgroundNames = new Map(backgrounds.map((background) => [background.id, background.name]));
+const isSvgSticker = (sticker: StickerPresetLayer) => sticker.content.trimStart().startsWith('<svg');
+---
+
+<Layout title={pageTitle} description={pageDescription} canonical={canonical}>
+	<header class="pc-site-header">
+		<a href="/" class="pc-site-header-brand" aria-label="Photo Collage home">
+			<img src="/Icons/favicon.svg" alt="" width="32" height="32" loading="eager" decoding="async" />
+			<span>Photo Collage</span>
+		</a>
+		<nav class="pc-site-header-links" aria-label="Template navigation">
+			<a href="/">Editor</a>
+			<a href="/templates/">Templates</a>
+			<a href="/photo-collage-maker/">Use cases</a>
+		</nav>
+	</header>
+
+	<main class="pc-template-directory">
+		<section class="pc-template-directory-hero">
+			<p class="pc-label">Template gallery</p>
+			<h1>Choose a collage template</h1>
+			<p>
+				Browse every template in one place. Pick a style, preview the layout, then open it directly in the editor to add your own photos.
+			</p>
+			<div class="pc-template-category-nav" aria-label="Template categories">
+				{categories.map((category) => <a href={`#${category.toLowerCase().replaceAll(' ', '-')}`}>{category}</a>)}
+			</div>
+		</section>
+
+		{categories.map((category) => {
+			const categoryTemplates = templates.filter((template) => template.category === category);
+			if (!categoryTemplates.length) return null;
+
+			return (
+				<section id={category.toLowerCase().replaceAll(' ', '-')} class="pc-template-directory-section">
+					<div class="pc-template-directory-heading">
+						<div>
+							<p class="pc-label">{category}</p>
+							<h2>{category} templates</h2>
+						</div>
+						<a href="/#studio">Open editor</a>
+					</div>
+
+					<div class="pc-template-directory-grid">
+						{categoryTemplates.map((template) => {
+							const size = getSize(template.size);
+							const background = getBackground(template.backgroundId);
+							const previewImages = template.previewImages ?? templateImages;
+
+							return (
+								<article class="pc-template-library-card">
+									<div
+										class="pc-template-library-preview"
+										style={`aspect-ratio:${size.css};background:${background.css};`}
+										aria-label={`${template.name} template preview`}
+									>
+										{template.slots.map((slot, index) => (
+											<span
+												class={`pc-template-library-photo pc-frame-${slot.frame ?? 'paper'}`}
+												style={`left:${slot.x}%;top:${slot.y}%;width:${slot.w}%;height:${slot.h}%;transform:rotate(${slot.rotation ?? 0}deg);border-radius:${slot.radius ?? 3}%;background-image:url('${previewImages[index % previewImages.length]}');`}
+											/>
+										))}
+										{template.texts.map((text) => (
+											<span
+												class="pc-template-library-text"
+												style={`left:${text.x}%;top:${text.y}%;width:${text.w}%;height:${text.h}%;transform:rotate(${text.rotation ?? 0}deg);color:${text.color};font-family:${text.fontFamily};font-size:${Math.max(10, text.fontSize * 2.4)}px;text-align:${text.align ?? 'center'};`}
+											>
+												{text.text}
+											</span>
+										))}
+										{template.stickers.map((sticker) => (
+											<span
+												class="pc-template-library-sticker"
+												style={`left:${sticker.x}%;top:${sticker.y}%;width:${sticker.w}%;height:${sticker.h}%;transform:rotate(${sticker.rotation ?? 0}deg);color:${sticker.color ?? '#171717'};opacity:${sticker.opacity ?? 1};`}
+											>
+												{isSvgSticker(sticker) ? <span set:html={sticker.content} /> : sticker.content}
+											</span>
+										))}
+									</div>
+
+									<div class="pc-template-library-meta">
+										<div>
+											<h3>{template.name}</h3>
+											<p>{size.name} · {backgroundNames.get(template.backgroundId) ?? 'Custom background'}</p>
+										</div>
+										<div class="pc-template-library-tags">
+											{template.tags.slice(0, 3).map((tag) => <span>{tag}</span>)}
+										</div>
+										<a class="pc-button pc-button-primary" href={`/?template=${encodeURIComponent(template.id)}#studio`}>
+											Open in editor
+										</a>
+									</div>
+								</article>
+							);
+						})}
+					</div>
+				</section>
+			);
+		})}
+	</main>
+</Layout>

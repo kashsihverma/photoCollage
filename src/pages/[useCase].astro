@@ -1,0 +1,121 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { useCasePages, type UseCasePage } from '../lib/use-cases';
+
+export function getStaticPaths() {
+	return useCasePages.map((page) => ({
+		params: { useCase: page.slug },
+		props: { page },
+	}));
+}
+
+const { page } = Astro.props as { page: UseCasePage };
+const canonical = `https://onlinephotocollage.com/${page.slug}/`;
+const jsonLd = {
+	'@context': 'https://schema.org',
+	'@graph': [
+		{
+			'@type': 'WebApplication',
+			name: page.heading,
+			url: canonical,
+			applicationCategory: 'MultimediaApplication',
+			operatingSystem: 'Web',
+			isAccessibleForFree: true,
+			description: page.description,
+			offers: {
+				'@type': 'Offer',
+				price: '0',
+				priceCurrency: 'USD',
+			},
+		},
+		{
+			'@type': 'FAQPage',
+			mainEntity: page.faq.map((item) => ({
+				'@type': 'Question',
+				name: item.question,
+				acceptedAnswer: {
+					'@type': 'Answer',
+					text: item.answer,
+				},
+			})),
+		},
+	],
+};
+---
+
+<Layout title={page.title} description={page.description} canonical={canonical} jsonLd={jsonLd}>
+	<header class="pc-site-header">
+		<a href="/" class="pc-site-header-brand" aria-label="Photo Collage home">
+			<img src="/Icons/favicon.svg" alt="" width="32" height="32" loading="eager" decoding="async" />
+			<span>Photo Collage</span>
+		</a>
+		<nav class="pc-site-header-links" aria-label="Use case navigation">
+			<a href="/">Editor</a>
+			<a href="/templates/">Templates</a>
+			<a href="/photo-collage-maker/">Photo collage</a>
+			<a href="/instagram-collage-maker/">Instagram</a>
+			<a href="/mood-board-maker/">Mood board</a>
+		</nav>
+	</header>
+
+	<main class="pc-doc-page pc-use-case-page">
+		<section class="pc-doc-hero">
+			<p class="pc-label">{page.label}</p>
+			<h1>{page.heading}</h1>
+			<p>{page.intro}</p>
+			<div class="pc-use-case-actions">
+				<a class="pc-button pc-button-primary" href="/#studio">Open editor</a>
+				<a class="pc-button pc-button-secondary" href="/#templates-title">Browse templates</a>
+			</div>
+		</section>
+
+		<section class="pc-use-case-grid" aria-label={`${page.heading} guide`}>
+			<div class="pc-use-case-panel">
+				<h2>Popular Uses</h2>
+				<ul>
+					{page.uses.map((item) => <li>{item}</li>)}
+				</ul>
+			</div>
+			<div class="pc-use-case-panel">
+				<h2>Design Tips</h2>
+				<ul>
+					{page.tips.map((item) => <li>{item}</li>)}
+				</ul>
+			</div>
+			<div class="pc-use-case-panel">
+				<h2>Template Starters</h2>
+				<ul>
+					{page.templates.map((item) => <li>{item}</li>)}
+				</ul>
+			</div>
+		</section>
+
+		<section class="pc-use-case-flow" aria-labelledby="flow-title">
+			<div>
+				<p class="pc-label">Workflow</p>
+				<h2 id="flow-title">Upload, Remix, Refine, Download</h2>
+			</div>
+			<ol>
+				<li><strong>Upload photos.</strong><span>Drop images into the browser-based editor.</span></li>
+				<li><strong>Generate a smart layout.</strong><span>Use Balanced, Story, or Moodboard remix options.</span></li>
+				<li><strong>Adjust details.</strong><span>Edit text, filters, frames, backgrounds, and layers.</span></li>
+				<li><strong>Export confidently.</strong><span>Download a high-resolution PNG or JPG.</span></li>
+			</ol>
+		</section>
+
+		<section class="pc-faq" aria-labelledby="use-case-faq">
+			<div class="pc-faq-heading">
+				<p class="pc-label">FAQ</p>
+				<h2 id="use-case-faq">{page.heading} Questions</h2>
+			</div>
+			<div class="pc-faq-list">
+				{page.faq.map((item) => (
+					<details class="pc-faq-item">
+						<summary>{item.question}</summary>
+						<p>{item.answer}</p>
+					</details>
+				))}
+			</div>
+		</section>
+	</main>
+</Layout>

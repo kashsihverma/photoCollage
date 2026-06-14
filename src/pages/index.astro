@@ -11,6 +11,7 @@ import paletteIcon from 'lucide-static/icons/palette.svg?raw';
 import redoIcon from 'lucide-static/icons/redo-2.svg?raw';
 import saveIcon from 'lucide-static/icons/save.svg?raw';
 import searchIcon from 'lucide-static/icons/search.svg?raw';
+import shareIcon from 'lucide-static/icons/share-2.svg?raw';
 import shapesIcon from 'lucide-static/icons/shapes.svg?raw';
 import sparklesIcon from 'lucide-static/icons/sparkles.svg?raw';
 import sunIcon from 'lucide-static/icons/sun.svg?raw';
@@ -19,9 +20,9 @@ import trashIcon from 'lucide-static/icons/trash-2.svg?raw';
 import undoIcon from 'lucide-static/icons/undo-2.svg?raw';
 import uploadIcon from 'lucide-static/icons/upload.svg?raw';
 
-const pageTitle = 'Instagram Collage Maker Free Online | Story & Post Collages';
+const pageTitle = 'Free Online Photo Collage Maker | No Account, Browser Based';
 const pageDescription =
-	'Create an Instagram collage story or Instagram collage post online with this free Instagram collage maker, using templates, frames, text, and downloads.';
+	'Make photo collages online for Instagram, mood boards, birthdays, travel, products, and print. No account required, browser-based editing, PNG/JPG export.';
 const canonical = 'https://onlinephotocollage.com/';
 const seoKeywords = [
 	'instagram collage',
@@ -166,23 +167,27 @@ const seoJsonLd = {
 				<option value="png">PNG</option>
 				<option value="jpeg">JPG</option>
 			</select>
-		</div>
+			</div>
 
-		<div class="pc-top-actions">
-			<button id="theme-toggle" class="pc-button pc-button-secondary pc-theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false">
-				<span class="pc-icon pc-theme-icon pc-theme-icon-moon" set:html={moonIcon} aria-hidden="true"></span>
-				<span class="pc-icon pc-theme-icon pc-theme-icon-sun" set:html={sunIcon} aria-hidden="true"></span>
-				<span class="pc-theme-label">Dark</span>
-			</button>
-			<button id="save-design" class="pc-button pc-button-secondary" type="button">
-				<span class="pc-icon" set:html={saveIcon} aria-hidden="true"></span>
-				Save
-			</button>
-			<button id="finish-collage" class="pc-button pc-button-primary" type="button">
-				<span class="pc-icon" set:html={downloadIcon} aria-hidden="true"></span>
-				Download
-			</button>
-		</div>
+			<div class="pc-top-actions">
+				<button id="theme-toggle" class="pc-button pc-button-secondary pc-theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false">
+					<span class="pc-icon pc-theme-icon pc-theme-icon-moon" set:html={moonIcon} aria-hidden="true"></span>
+					<span class="pc-icon pc-theme-icon pc-theme-icon-sun" set:html={sunIcon} aria-hidden="true"></span>
+					<span class="pc-theme-label">Dark</span>
+				</button>
+				<button id="save-design" class="pc-button pc-button-secondary" type="button">
+					<span class="pc-icon" set:html={saveIcon} aria-hidden="true"></span>
+					Save
+				</button>
+				<button id="share-collage" class="pc-button pc-button-secondary" type="button" aria-controls="share-panel" aria-expanded="false">
+					<span class="pc-icon" set:html={shareIcon} aria-hidden="true"></span>
+					Share
+				</button>
+				<button id="finish-collage" class="pc-button pc-button-primary" type="button">
+					<span class="pc-icon" set:html={downloadIcon} aria-hidden="true"></span>
+					Download
+				</button>
+			</div>
 	</header>
 
 	<main class="pc-page-main">
@@ -253,6 +258,18 @@ const seoJsonLd = {
 						<small>PNG, JPG, WebP, AVIF</small>
 						<input id="photo-input" class="sr-only" type="file" accept="image/*" multiple />
 					</label>
+
+					<div class="pc-smart-panel" aria-label="Smart collage layouts">
+						<div>
+							<p class="pc-label">Smart start</p>
+							<h3>Generate layouts from uploads</h3>
+						</div>
+						<div class="pc-smart-actions">
+							<button id="smart-balanced" class="pc-button pc-button-secondary" type="button">Balanced</button>
+							<button id="smart-story" class="pc-button pc-button-secondary" type="button">Story</button>
+							<button id="smart-moodboard" class="pc-button pc-button-secondary" type="button">Moodboard</button>
+						</div>
+					</div>
 
 					<div class="pc-inline-actions">
 						<button id="clear-photos" class="pc-button pc-button-secondary pc-delete-all" type="button" aria-label="Delete all uploaded photos">
@@ -347,23 +364,79 @@ const seoJsonLd = {
 				</div>
 			</div>
 
+			<div class="pc-start-strip" aria-label="Fast start actions">
+				<div class="pc-start-copy">
+					<strong>Privacy-first collage maker</strong>
+					<span>No account · Browser editing · PNG/JPG export</span>
+				</div>
+				<div class="pc-start-actions">
+					<button id="quick-upload" class="pc-button pc-button-primary" type="button">
+						<span class="pc-icon" set:html={uploadIcon} aria-hidden="true"></span>
+						Upload photos
+					</button>
+					<button id="quick-template" class="pc-button pc-button-secondary" type="button">
+						<span class="pc-icon" set:html={layoutIcon} aria-hidden="true"></span>
+						Templates
+					</button>
+					<button id="quick-remix" class="pc-button pc-button-secondary" type="button">
+						<span class="pc-icon" set:html={sparklesIcon} aria-hidden="true"></span>
+						Remix
+					</button>
+				</div>
+			</div>
+
 			<div id="editor-stage" class="pc-stage">
 				<div id="snap-guide-x" class="pc-guide pc-guide-x hidden" aria-hidden="true"></div>
 				<div id="snap-guide-y" class="pc-guide pc-guide-y hidden" aria-hidden="true"></div>
 				<div id="collage-preview" class="pc-design-surface" aria-label="Editable collage canvas"></div>
 			</div>
 
-			<div class="pc-statusbar">
-				<p id="status-line" aria-live="polite">Choose a template or upload photos.</p>
-				<div id="download-panel" class="pc-download-panel hidden">
-					<canvas id="export-canvas" class="hidden"></canvas>
-					<a id="download-link" class="pc-button pc-button-primary" href="#" download="photo-collage.png">
-						<span class="pc-icon" set:html={downloadIcon} aria-hidden="true"></span>
-						Download ready
-					</a>
+				<div class="pc-statusbar">
+					<p id="status-line" aria-live="polite">Choose a template or upload photos.</p>
+					<div id="download-panel" class="pc-download-panel hidden">
+						<canvas id="export-canvas" class="hidden"></canvas>
+						<a id="download-link" class="pc-button pc-button-primary" href="#" download="photo-collage.png">
+							<span class="pc-icon" set:html={downloadIcon} aria-hidden="true"></span>
+							Download ready
+						</a>
+					</div>
+					<div id="share-panel" class="pc-share-panel hidden" aria-label="Share collage options">
+						<div class="pc-share-panel-heading">
+								<div>
+									<strong>Share collage</strong>
+									<span>Works on desktop web and phone.</span>
+								</div>
+								<button id="share-close" class="pc-share-close" type="button" aria-label="Close share options">x</button>
+							</div>
+							<div class="pc-share-options">
+								<button class="pc-share-option" type="button" data-share-target="native">
+									<strong>Share to apps</strong>
+									<span>Instagram, Stories, Snapchat, Messages</span>
+								</button>
+								<button class="pc-share-option" type="button" data-share-target="copy">
+									<strong>Copy image</strong>
+									<span>Paste into chats or web apps</span>
+								</button>
+								<button class="pc-share-option" type="button" data-share-target="whatsapp">
+									<strong>WhatsApp / Web</strong>
+									<span>Copy or download, then open WhatsApp</span>
+								</button>
+								<button class="pc-share-option" type="button" data-share-target="instagram">
+									<strong>Instagram post/story</strong>
+									<span>Share on phone or upload on web</span>
+								</button>
+								<button class="pc-share-option" type="button" data-share-target="snapchat">
+									<strong>Snapchat</strong>
+									<span>Share on phone or upload on web</span>
+								</button>
+							<button class="pc-share-option" type="button" data-share-target="download">
+								<strong>Download image</strong>
+								<span>Upload anywhere manually</span>
+							</button>
+						</div>
+					</div>
+					<p id="export-empty" class="sr-only">Download the collage from the top toolbar.</p>
 				</div>
-				<p id="export-empty" class="sr-only">Download the collage from the top toolbar.</p>
-			</div>
 		</section>
 
 		<aside class="pc-inspector" aria-label="Selected object controls">
@@ -389,9 +462,9 @@ const seoJsonLd = {
 		<article class="pc-seo-content">
 			<div class="pc-seo-heading">
 				<p class="pc-label">Free online editor</p>
-				<h1 id="seo-title">Instagram Collage Maker for Story and Post Designs</h1>
+				<h1 id="seo-title">Privacy-First Online Photo Collage Maker</h1>
 				<p class="pc-seo-lede">
-					Create an Instagram collage in the browser with polished templates, flexible story and post canvas sizes, photo frames, text, stickers, and instant PNG or JPG download.
+					Create collages for Instagram, mood boards, birthdays, travel, products, and print. Start with templates or upload photos, generate a smart layout, refine every layer, and download a polished PNG or JPG.
 				</p>
 			</div>
 
@@ -421,12 +494,14 @@ const seoJsonLd = {
 				</div>
 
 				<aside class="pc-seo-aside" aria-label="Instagram collage use cases">
-					<h2>Popular Instagram collage uses</h2>
+					<h2>Popular collage makers</h2>
 					<ul>
-						<li>Create an Instagram collage story for travel, birthdays, launches, and daily recaps.</li>
-						<li>Design an Instagram collage post for feeds, portfolios, products, and event highlights.</li>
-						<li>Use templates, frames, stickers, captions, and custom backgrounds in one browser editor.</li>
-						<li>Export a high-resolution PNG or JPG for Instagram, social media, or client review.</li>
+						<li><a href="/instagram-collage-maker/">Instagram collage maker</a></li>
+						<li><a href="/mood-board-maker/">Mood board maker</a></li>
+						<li><a href="/birthday-photo-collage/">Birthday photo collage maker</a></li>
+						<li><a href="/travel-photo-collage/">Travel photo collage maker</a></li>
+						<li><a href="/facebook-cover-collage/">Facebook cover collage maker</a></li>
+						<li><a href="/printable-photo-collage/">Printable photo collage maker</a></li>
 					</ul>
 				</aside>
 			</div>
@@ -459,6 +534,8 @@ const seoJsonLd = {
 			<nav class="pc-site-footer-links" aria-label="Footer">
 				<a href="/about-us/">About us</a>
 				<a href="/contact-us/">Contact us</a>
+				<a href="/templates/">Templates</a>
+				<a href="/photo-collage-maker/">Use cases</a>
 				<a href="/privacy-policy/">Privacy policy</a>
 				<a href="/terms-and-conditions/">Terms & conditions</a>
 			</nav>
